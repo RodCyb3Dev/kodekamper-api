@@ -4,7 +4,9 @@
   "main": "server.js",
   "scripts": {
     "start": "NODE_ENV=production node server",
-    "dev": "nodemon server"
+    "dev": "nodemon server",
+    "data:import": "node seeder -i",
+    "data:destroy": "node seeder -d"
   },
   "author": "Rodney Hammad",
   "license": "MIT",
