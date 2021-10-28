@@ -8,6 +8,7 @@
     "data:import": "node seeder -i",
     "data:destroy": "node seeder -d"
   },
+  "keywords": ["REST API", "API", "Postman", "CRUD", "Node"],
   "author": "Rodney Hammad",
   "license": "MIT",
   "dependencies": {
