@@ -46,7 +46,8 @@ app.use(fileupload());
 app.use(mongoSanitize());
 
 // Set security headers
-//app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet({ contentSecurityPolicy: false }));
+/*
 app.use(
   helmet.contentSecurityPolicy({
     useDefaults: false,
@@ -58,6 +59,7 @@ app.use(
     },
   })
 );
+*/
 
 // Prevent XSS attacks
 app.use(xss());
