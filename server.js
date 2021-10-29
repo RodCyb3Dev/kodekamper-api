@@ -54,7 +54,7 @@ app.use(
     directives: {
       defaultSrc: ["'self'"],
       styleSrc:  ["'self' https: 'unsafe-inline'"],
-      scriptSrc: ["'unsafe-inline'", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"],
+      scriptSrc: ["'unsafe-inline'", "http://getbootstrap.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
