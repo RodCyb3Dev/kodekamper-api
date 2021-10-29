@@ -18,14 +18,22 @@
 <a class=text-success data-toggle=collapse data-parent=#accordion-Authentication href=#collapse-Authentication-LoginUser><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Login User</strong> &nbsp;|&nbsp;
 <strong class="request-method border-success">POST</strong>
 &nbsp;
-{{URL}}/api/v1/auth/login</h4></a></div><div id=collapse-Authentication-LoginUser class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>Login user via the token and we prevent NoSQL Injection &amp; Sanitize.</small><br><br><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{{Login_Req_Body}}</span><div class=clearfix></div></div></div></div><div class="panel panel-info" id=jump-Authentication-LogoutUser_2FClearCookie><div class=panel-heading><small class="pull-right text-muted"></small><a class=text-info data-toggle=collapse data-parent=#accordion-Authentication href=#collapse-Authentication-LogoutUser_2FClearCookie><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Logout User / Clear Cookie</strong> &nbsp;|&nbsp;
+{{URL}}/api/v1/auth/login</h4></a></div><div id=collapse-Authentication-LoginUser class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>Login user via the token and we prevent NoSQL Injection &amp; Sanitize.</small><br><br><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{
+&#34;email&#34;: &#34;publisher@gmail.com&#34;,
+&#34;password&#34;: &#34;123456&#34;
+}</span><div class=clearfix></div></div></div></div><div class="panel panel-info" id=jump-Authentication-LogoutUser_2FClearCookie><div class=panel-heading><small class="pull-right text-muted"></small><a class=text-info data-toggle=collapse data-parent=#accordion-Authentication href=#collapse-Authentication-LogoutUser_2FClearCookie><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Logout User / Clear Cookie</strong> &nbsp;|&nbsp;
 <strong class="request-method border-info">GET</strong>
 &nbsp;
 {{URL}}/api/v1/auth/logout</h4></a></div><div id=collapse-Authentication-LogoutUser_2FClearCookie class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>Clear token cookie once the user logs out.</small><br><br></div></div></div><div class="panel panel-success" id=jump-Authentication-RegisterUser><div class=panel-heading><small class="pull-right text-muted">raw</small>
 <a class=text-success data-toggle=collapse data-parent=#accordion-Authentication href=#collapse-Authentication-RegisterUser><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Register User</strong> &nbsp;|&nbsp;
 <strong class="request-method border-success">POST</strong>
 &nbsp;
-{{URL}}/api/v1/auth/register</h4></a></div><div id=collapse-Authentication-RegisterUser class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>Add user to database with encrypted password.</small><br><br><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{{User_Register_Body}}</span><div class=clearfix></div></div></div></div><div class="panel panel-warning" id=jump-Authentication-ResetPassword><div class=panel-heading><small class="pull-right text-muted">raw</small>
+{{URL}}/api/v1/auth/register</h4></a></div><div id=collapse-Authentication-RegisterUser class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>Add user to database with encrypted password.</small><br><br><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{
+&#34;name&#34;: &#34;Publisher Account&#34;,
+&#34;email&#34;: &#34;publisher@gmail.com&#34;,
+&#34;role&#34;: &#34;publisher&#34;,
+&#34;password&#34;: &#34;123456&#34;
+}</span><div class=clearfix></div></div></div></div><div class="panel panel-warning" id=jump-Authentication-ResetPassword><div class=panel-heading><small class="pull-right text-muted">raw</small>
 <a class=text-warning data-toggle=collapse data-parent=#accordion-Authentication href=#collapse-Authentication-ResetPassword><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Reset Password</strong> &nbsp;|&nbsp;
 <strong class="request-method border-warning">PUT</strong>
 &nbsp;
@@ -50,7 +58,24 @@
 <a class=text-success data-toggle=collapse data-parent=#accordion-Bootcamps href=#collapse-Bootcamps-CreateNewBootcamp><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Create New Bootcamp</strong> &nbsp;|&nbsp;
 <strong class="request-method border-success">POST</strong>
 &nbsp;
-{{URL}}/api/v1/bootcamps</h4></a></div><div id=collapse-Bootcamps-CreateNewBootcamp class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>Create single bootcamp</small><br><br><h5 class="label label-warning">Headers</h5><table class="table table-hover"><thead><tr><th>Key<th>Value<th>Description<tbody><tr><td>Content-Type<td>application/json<td><p>JSON Type</table><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{{Bootcamp_Req_Body}}</span><div class=clearfix></div></div></div></div><div class="panel panel-danger" id=jump-Bootcamps-DeleteBootcamp><div class=panel-heading><small class="pull-right text-muted">raw</small>
+{{URL}}/api/v1/bootcamps</h4></a></div><div id=collapse-Bootcamps-CreateNewBootcamp class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>Create single bootcamp</small><br><br><h5 class="label label-warning">Headers</h5><table class="table table-hover"><thead><tr><th>Key<th>Value<th>Description<tbody><tr><td>Content-Type<td>application/json<td><p>JSON Type</table><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{
+&#34;name&#34;: &#34;Kodekamper Bootcamp&#34;,
+&#34;description&#34;: &#34;Is coding your passion? Codemasters will give you the skills and the tools to become the best developer possible. We specialize in front end and full stack web development&#34;,
+&#34;website&#34;: &#34;https://kodekamper.com&#34;,
+&#34;phone&#34;: &#34;kodekamper.com&#34;,
+&#34;email&#34;: &#34;enroll@devcentral.com&#34;,
+&#34;address&#34;: &#34;45 Upper College Rd Kingston RI 02881&#34;,
+&#34;careers&#34;: [
+&#34;Mobile Development&#34;,
+&#34;Web Development&#34;,
+&#34;Data Science&#34;,
+&#34;Business&#34;
+],
+&#34;housing&#34;: false,
+&#34;jobAssistance&#34;: true,
+&#34;jobGuarantee&#34;: true,
+&#34;acceptGi&#34;: true
+}</span><div class=clearfix></div></div></div></div><div class="panel panel-danger" id=jump-Bootcamps-DeleteBootcamp><div class=panel-heading><small class="pull-right text-muted">raw</small>
 <a class=text-danger data-toggle=collapse data-parent=#accordion-Bootcamps href=#collapse-Bootcamps-DeleteBootcamp><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Delete Bootcamp</strong> &nbsp;|&nbsp;
 <strong class="request-method border-danger">DELETE</strong>
 &nbsp;
@@ -70,6 +95,8 @@
 <strong class="request-method border-warning">PUT</strong>
 &nbsp;
 {{URL}}/api/v1/bootcamps/{{Bootcamp_ID}}</h4></a></div><div id=collapse-Bootcamps-UpdateBootcamp class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>Update single bootcamp by ID.</small><br><br><h5 class="label label-warning">Headers</h5><table class="table table-hover"><thead><tr><th>Key<th>Value<th>Description<tbody><tr><td>Content-Type<td>application/json<td><p>JSON Type</table><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{
+&#34;name&#34;: &#34;Test Bootcamp&#34;,
+&#34;address&#34;: &#34;45 Upper College Rd Kingston RI 02881&#34;,
 &#34;careers&#34;: [
 &#34;Data Science&#34;,
 &#34;Business&#34;
@@ -82,7 +109,14 @@
 <a class=text-success data-toggle=collapse data-parent=#accordion-Courses href=#collapse-Courses-AddCourse><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Add Course</strong> &nbsp;|&nbsp;
 <strong class="request-method border-success">POST</strong>
 &nbsp;
-{{URL}}/api/v1/bootcamps/{{Bootcamp_ID}}/courses</h4></a></div><div id=collapse-Courses-AddCourse class="panel-collapse collapse"><div class=panel-body><h5 class="label label-warning">Headers</h5><table class="table table-hover"><thead><tr><th>Key<th>Value<th>Description<tbody><tr><td>Content-Type<td>application/json<td><p>JSON Type</table><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{{Course_Req_Body}}</span><div class=clearfix></div></div></div></div><div class="panel panel-danger" id=jump-Courses-Deletecourse><div class=panel-heading><small class="pull-right text-muted"></small><a class=text-danger data-toggle=collapse data-parent=#accordion-Courses href=#collapse-Courses-Deletecourse><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Delete course</strong> &nbsp;|&nbsp;
+{{URL}}/api/v1/bootcamps/{{Bootcamp_ID}}/courses</h4></a></div><div id=collapse-Courses-AddCourse class="panel-collapse collapse"><div class=panel-body><h5 class="label label-warning">Headers</h5><table class="table table-hover"><thead><tr><th>Key<th>Value<th>Description<tbody><tr><td>Content-Type<td>application/json<td><p>JSON Type</table><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{
+&#34;title&#34;: &#34;Full Stack Web Dev&#34;,
+&#34;description&#34;: &#34;In this course you will learn all about the front end with HTML, CSS and JavaScript. You will master tools like Git and Webpack and also learn C# and ASP.NET with Postgres&#34;,
+&#34;weeks&#34;: 10,
+&#34;tuition&#34;: 12000,
+&#34;minimumSkill&#34;: &#34;intermediate&#34;,
+&#34;scholarhipsAvailable&#34;: true
+}</span><div class=clearfix></div></div></div></div><div class="panel panel-danger" id=jump-Courses-Deletecourse><div class=panel-heading><small class="pull-right text-muted"></small><a class=text-danger data-toggle=collapse data-parent=#accordion-Courses href=#collapse-Courses-Deletecourse><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Delete course</strong> &nbsp;|&nbsp;
 <strong class="request-method border-danger">DELETE</strong>
 &nbsp;
 {{URL}}/api/v1/courses/{{Course_ID}}</h4></a></div><div id=collapse-Courses-Deletecourse class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>Delete single course by ID.</small><br><br></div></div></div><div class="panel panel-info" id=jump-Courses-GetAllCourses><div class=panel-heading><small class="pull-right text-muted"></small><a class=text-info data-toggle=collapse data-parent=#accordion-Courses href=#collapse-Courses-GetAllCourses><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Get All Courses</strong> &nbsp;|&nbsp;
@@ -119,7 +153,11 @@
 <a class=text-success data-toggle=collapse data-parent=#accordion-Reviews href=#collapse-Reviews-AddReview><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Add Review</strong> &nbsp;|&nbsp;
 <strong class="request-method border-success">POST</strong>
 &nbsp;
-{{URL}}/api/v1/bootcamps/{{Bootcamp_ID}}/reviews</h4></a></div><div id=collapse-Reviews-AddReview class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>User or Admin can add reviews to a specific bootcamp.</small><br><br><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{{Review_Body}}</span><div class=clearfix></div></div></div></div><div class="panel panel-danger" id=jump-Reviews-DeleteReview><div class=panel-heading><small class="pull-right text-muted"></small><a class=text-danger data-toggle=collapse data-parent=#accordion-Reviews href=#collapse-Reviews-DeleteReview><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Delete Review</strong> &nbsp;|&nbsp;
+{{URL}}/api/v1/bootcamps/{{Bootcamp_ID}}/reviews</h4></a></div><div id=collapse-Reviews-AddReview class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>User or Admin can add reviews to a specific bootcamp.</small><br><br><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{
+&#34;title&#34;: &#34;Was worth the investment&#34;,
+&#34;text&#34;: &#34;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec viverra feugiat mauris id viverra. Duis luctus ex sed facilisis ultrices. Curabitur scelerisque bibendum ligula, quis condimentum libero fermentum in. Aenean erat erat, aliquam in purus a, rhoncus hendrerit tellus. Donec accumsan justo in felis consequat sollicitudin. Fusce luctus mattis nunc vitae maximus. Curabitur semper felis eu magna laoreet scelerisque&#34;,
+&#34;rating&#34;: &#34;3&#34;
+}</span><div class=clearfix></div></div></div></div><div class="panel panel-danger" id=jump-Reviews-DeleteReview><div class=panel-heading><small class="pull-right text-muted"></small><a class=text-danger data-toggle=collapse data-parent=#accordion-Reviews href=#collapse-Reviews-DeleteReview><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Delete Review</strong> &nbsp;|&nbsp;
 <strong class="request-method border-danger">DELETE</strong>
 &nbsp;
 {{URL}}/api/v1/reviews/{{Review_ID}}</h4></a></div><div id=collapse-Reviews-DeleteReview class="panel-collapse collapse"><div class=panel-body></div></div></div><div class="panel panel-info" id=jump-Reviews-GetReviews><div class=panel-heading><small class="pull-right text-muted"></small><a class=text-info data-toggle=collapse data-parent=#accordion-Reviews href=#collapse-Reviews-GetReviews><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Get Reviews</strong> &nbsp;|&nbsp;
@@ -135,16 +173,20 @@
 <a class=text-warning data-toggle=collapse data-parent=#accordion-Reviews href=#collapse-Reviews-UpdateReview><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Update Review</strong> &nbsp;|&nbsp;
 <strong class="request-method border-warning">PUT</strong>
 &nbsp;
-{{URL}}/api/v1/reviews/{{Review_ID}}</h4></a></div><div id=collapse-Reviews-UpdateReview class="panel-collapse collapse"><div class=panel-body><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{{Review_Body}}</span><div class=clearfix></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class=panel-heading><h3 class=panel-title id=Users>Users
+{{URL}}/api/v1/reviews/{{Review_ID}}</h4></a></div><div id=collapse-Reviews-UpdateReview class="panel-collapse collapse"><div class=panel-body><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{
+&#34;title&#34;: &#34;Was worth the investment&#34;,
+&#34;text&#34;: &#34;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec viverra feugiat mauris id viverra. Duis luctus ex sed facilisis ultrices. Curabitur scelerisque bibendum ligula.&#34;,
+&#34;rating&#34;: &#34;5&#34;
+}</span><div class=clearfix></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class=panel-heading><h3 class=panel-title id=Users>Users
 <span class=badge>5</span></h3></div><div class=panel-body><p><p>CRUD functionality for users only available to admins.<div class=request-item><div class=panel-group id=accordion-Users><div class="panel panel-success" id=jump-Users-CreateUser><div class=panel-heading><small class="pull-right text-muted">raw</small>
 <a class=text-success data-toggle=collapse data-parent=#accordion-Users href=#collapse-Users-CreateUser><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Create User</strong> &nbsp;|&nbsp;
 <strong class="request-method border-success">POST</strong>
 &nbsp;
 {{URL}}/api/v1/users</h4></a></div><div id=collapse-Users-CreateUser class="panel-collapse collapse"><div class=panel-body><h5 class="label label-default">Description</h5><br><small><p>Admin can create a new user.</small><br><br><h5 class="label label-warning">Headers</h5><table class="table table-hover"><thead><tr><th>Key<th>Value<th>Description<tbody><tr><td>Content-Type<td>application/json<td><p>JSON Type</table><h5 class="label label-primary">Body</h5><span class=resp-prettyprint>{
-&#34;name&#34;: &#34;{{User_Name}}&#34;,
-&#34;email&#34;: &#34;{{User_Email}}&#34;,
-&#34;role&#34;: &#34;{{User_Role}}&#34;,
-&#34;password&#34;: &#34;{{User_Password}}&#34;
+&#34;name&#34;: &#34;Mary Williams&#34;,
+&#34;email&#34;: &#34;mary@gmail.com&#34;,
+&#34;role&#34;: &#34;publisher&#34;,
+&#34;password&#34;: &#34;123456&#34;
 }</span><div class=clearfix></div></div></div></div><div class="panel panel-danger" id=jump-Users-DeleteUser><div class=panel-heading><small class="pull-right text-muted">raw</small>
 <a class=text-danger data-toggle=collapse data-parent=#accordion-Users href=#collapse-Users-DeleteUser><h4 class=panel-title><span class="glyphicon glyphicon-plus"></span><strong>Delete User</strong> &nbsp;|&nbsp;
 <strong class="request-method border-danger">DELETE</strong>
@@ -170,4 +212,4 @@ if(IsJsonString(html)){var obj=JSON.parse(html);var formattedJson=JSON.stringify
 function IsJsonString(str){try{JSON.parse(str);}catch(e){return false;}
 return true;}
 String.prototype.replaceAll=function(replaceThis,withThis){var re=new RegExp(RegExp.quote(replaceThis),"g");return this.replace(re,withThis);};RegExp.quote=function(str){return str.replace(/([.?*+^$[\]\\(){}-])/g,"\\$1");};function syntaxHighlight(json){json=json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(match){var cls='number';if(/^"/.test(match)){if(/:$/.test(match)){cls='key';}else{cls='string';}}else if(/true|false/.test(match)){cls='boolean';}else if(/null/.test(match)){cls='null';}
-return '<span class="'+cls+'">'+match+'</span>';});}</script><br><br><footer class="navbar-default navbar-fixed-bottom"><div class=container-fluid><div class="span12 text-center"><span data-toggle=tooltip title="If the application help you, please feel free to give a star to the project in github. Your star inspire me to work more on open-source projects like this!">Made with <em class=love-color>&#9829;</em> by <a href=https://github.com/thedevsaddam target=_blank class=text-muted>thedevsaddam</a> | Generated at: 2021-10-29 00:39:21 by <a href=https://github.com/thedevsaddam/docgen target=_blank class=text-muted>docgen</a></span></div></div></footer>
+return '<span class="'+cls+'">'+match+'</span>';});}</script><br><br><footer class="navbar-default navbar-fixed-bottom"><div class=container-fluid><div class="span12 text-center"><span data-toggle=tooltip title="If the application help you, please feel free to give a star to the project in github.">Made with <em class=love-color>&#9829;</em> by <a href=https:/https://github.com/Rodcode47/kodekamper-api target=_blank class=text-muted>Rodney H</a> | Generated at: 2021-10-29 15:13:09 by <a href=https://github.com/thedevsaddam/docgen target=_blank class=text-muted>docgen</a></span></div></div></footer>
