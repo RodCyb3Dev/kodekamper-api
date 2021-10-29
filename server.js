@@ -46,7 +46,18 @@ app.use(fileupload());
 app.use(mongoSanitize());
 
 // Set security headers
-app.use(helmet());
+//app.use(helmet({ contentSecurityPolicy: false }));
+app.use(
+  helmet.contentSecurityPolicy({
+    useDefaults: false,
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  })
+);
 
 // Prevent XSS attacks
 app.use(xss());
