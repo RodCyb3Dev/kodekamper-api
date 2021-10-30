@@ -46,23 +46,22 @@ app.use(fileupload());
 app.use(mongoSanitize());
 
 // Set security headers
-//app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet());
 
+/*app.use(helmet({ contentSecurityPolicy: false }));
 app.use(
   helmet.contentSecurityPolicy({
     useDefaults: false,
     directives: {
       defaultSrc: ["'self'"],
       styleSrc:  ["'self' https: 'unsafe-inline'"],
-      scriptSrc: ["'unsafe-inline'", "http://getbootstrap.com"],
+      scriptSrc: ["'unsafe-inline'", "https://getbootstrap.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
-  }, 
-  helmet.crossOriginResourcePolicy({ policy: "same-site" })
-  )
+  })
 );
-
+*/
 
 // Prevent XSS attacks
 app.use(xss());
