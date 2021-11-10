@@ -62,7 +62,7 @@ yarn run data:import
 
 The API is live at [kodekamper.app](https://kodekamper.app)
 
-Test documentation with Postman [here](https://documenter.getpostman.com/view/8923145/SVtVVTzd?version=latest)
+Test documentation with **Postman** [here](https://documenter.getpostman.com/view/8923145/SVtVVTzd?version=latest)
 
 - Version: 1.0.0
 - License: MIT
