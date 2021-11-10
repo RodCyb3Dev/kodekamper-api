@@ -60,7 +60,7 @@ yarn run data:import
 
 ## Demo
 
-The API is live at [kodekamper.io](https://kodekamper.io)
+The API is live at [kodekamper.app](https://kodekamper.app)
 
 Extensive documentation with examples [here](https://documenter.getpostman.com/view/8923145/SVtVVTzd?version=latest)
 
