@@ -66,7 +66,7 @@ Test documentation with **Postman** [here](https://documenter.getpostman.com/vie
 
 - Version: 1.0.0
 - License: MIT
-- Author: [Rodney Hammad](https://kodeflash.com)
+- Author: [Rodney](https://kodeflash.com)
 
 #### Use Import Instead of Require in Node App
 
