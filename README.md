@@ -2,6 +2,20 @@
 
 > KodeKamper is an extensive REST API service provide for consumer to build their own frontend platform on demand.
 
+### Demo
+
+The API is live at [kodekamper.app](https://kodekamper.app)
+
+**Test Automation with Postman:**
+
+Test documentation with **Postman** [here](https://documenter.getpostman.com/view/8923145/SVtVVTzd?version=latest) Or click here "Run In Postman".
+
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://lively-firefly-453625.postman.co/collection/3062469-e06c8941-9ba3-45f2-a807-668714e83021?source=rip_markdown&env=3062469-c5603605-46bb-4f9b-a1d4-c5cc10f1dd18)
+
+- Version: 1.0.0
+- License: MIT
+- Author: [Rodney's profile](https://kodeflash.dev)
+
 ##### This is a project includes:
 
 - HTTP Essentials
@@ -57,16 +71,6 @@ yarn run data:destroy
 # Import all data
 yarn run data:import
 ```
-
-## Demo
-
-The API is live at [kodekamper.app](https://kodekamper.app)
-
-Test documentation with **Postman** [here](https://documenter.getpostman.com/view/8923145/SVtVVTzd?version=latest)
-
-- Version: 1.0.0
-- License: MIT
-- Author: [Rodney](https://kodeflash.com)
 
 #### Use Import Instead of Require in Node App
 
