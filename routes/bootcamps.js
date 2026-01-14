@@ -22,6 +22,7 @@ router.use('/:bootcampId/courses', courseRouter);
 router.use('/:bootcampId/reviews', reviewRouter);
 
 const advancedResults = require('../middleware/advancedResults');
+const cacheResponse = require('../middleware/cache');
 const { protect, authorize } = require('../middleware/auth');
 
 // Get bootcamps by radius
@@ -35,7 +36,7 @@ router
 // bootcamps
 router
   .route('/')
-  .get(advancedResults(Bootcamp, 'courses'), getBootcamps)
+  .get(cacheResponse(60), advancedResults(Bootcamp, 'courses'), getBootcamps)
   .post(protect, authorize('publisher', 'admin'), createBootcamp);
 
 // bootcamp by ID
