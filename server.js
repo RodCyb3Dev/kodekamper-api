@@ -8,10 +8,12 @@ const cookieParser = require('cookie-parser');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const xss = require('xss-clean');
-const rateLimit = require('express-rate-limit');
+const { globalLimiter } = require('./middleware/rateLimiters');
+const botBlocker = require('./middleware/botBlocker');
 const hpp = require('hpp');
 const cors = require('cors');
 const errorHandler = require('./middleware/error');
+const cacheResponse = require('./middleware/cache');
 const connectDB = require('./config/db');
 
 // Load env vars
@@ -25,14 +27,21 @@ const courses = require('./routes/courses');
 const auth = require('./routes/auth');
 const users = require('./routes/users');
 const reviews = require('./routes/reviews');
+const health = require('./routes/health');
 
 const app = express();
 
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
 // Body parser
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 
 // Cookie parser
 app.use(cookieParser());
+
+// Block known scanning/bot user-agents
+app.use(botBlocker);
 
 // Dev logging middleware
 if(process.env.NODE_ENV === 'development') {
@@ -66,17 +75,16 @@ app.use(
 app.use(xss());
 
 // Rate limiting
-const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 mins
-  max: 100
-});
-app.use(limiter);
+app.use(globalLimiter);
 
 // Prevent http param pollution
 app.use(hpp());
 
 // Enable CORS
 app.use(cors());
+
+// Health check (cached for 10s)
+app.use('/api/v1/health', cacheResponse(10), health);
 
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
