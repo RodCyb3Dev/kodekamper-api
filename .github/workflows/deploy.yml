@@ -1,0 +1,83 @@
+name: Deploy (Staging/Production)
+
+on:
+  workflow_run:
+    workflows: ["QA"]
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Deployment environment
+        type: choice
+        required: true
+        options:
+          - staging
+          - production
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
+    if: |
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event.workflow_run.conclusion == 'success' &&
+        (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'staging'))
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve destination
+        id: dest
+        run: |
+          if [ -n "${{ inputs.environment }}" ]; then
+            echo "destination=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "destination=production" >> "$GITHUB_OUTPUT"
+          else
+            echo "destination=staging" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Install Kamal
+        run: gem install kamal -v 2.0.0
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy with Kamal
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          KAMAL_HOST: ${{ secrets.KAMAL_HOST }}
+          MONGODB_HOST: ${{ secrets.MONGODB_HOST }}
+          MONGODB_DB: ${{ secrets.MONGODB_DB }}
+          MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+          MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          REDIS_USERNAME: ${{ secrets.REDIS_USERNAME }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRE: ${{ secrets.JWT_EXPIRE }}
+          JWT_COOKIE_EXPIRE: ${{ secrets.JWT_COOKIE_EXPIRE }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          FROM_NAME: ${{ secrets.FROM_NAME }}
+          GEOCODER_PROVIDER: ${{ secrets.GEOCODER_PROVIDER }}
+          GEOCODER_API_KEY: ${{ secrets.GEOCODER_API_KEY }}
+          FILE_UPLOAD_PATH: ${{ secrets.FILE_UPLOAD_PATH }}
+          MAX_FILE_UPLOAD: ${{ secrets.MAX_FILE_UPLOAD }}
+        run: |
+          kamal deploy -d "${{ steps.dest.outputs.destination }}"

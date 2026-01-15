@@ -44,7 +44,25 @@ Test documentation with **Postman** [here](https://documenter.getpostman.com/vie
 
 ## Usage
 
-Rename "config/config.env.env" to "config/config.env" and update the values/settings with your own.
+Copy .env.example to .env and update values.
+
+Alternatively, set environment variables in your shell or GitHub Environment secrets (available to workflows as env vars).
+
+Runtime DB/Cache envs (built automatically if URLs are not provided):
+- `MONGODB_HOST`, `MONGODB_DB`, `MONGODB_USERNAME`, `MONGODB_PASSWORD`
+- `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`
+
+Optional full URLs (override the above):
+- `MONGODB_URI`, `REDIS_URL`
+
+Monitoring/SSL vars:
+- `DOMAIN`, `CERTBOT_EMAIL`, `ALERT_WEBHOOK_URL`, `CHECK_URLS`, `TCP_CHECKS`
+
+Kamal CI/CD secrets examples:
+- .kamal/secrets.production.example
+- .kamal/secrets.staging.example
+
+Example monitor env: see docker/monitor/monitor.env.example
 
 ## Install Dependencies
 
@@ -60,6 +78,33 @@ yarn run dev
 yarn start
 ```
 
+## Health Check
+
+The API exposes a health endpoint for monitoring:
+
+- `GET /api/v1/health` returns Mongo + Redis status and uptime.
+
+## Redis Caching
+
+Caching is enabled for:
+- `GET /api/v1/bootcamps`
+- `GET /api/v1/health`
+
+Caching is automatic when `REDIS_URL` is set.
+
+## Security Notes
+
+The server enables:
+- Request size limit (10kb)
+- Global rate limiting + stricter auth rate limits
+- Bot/scanner user-agent and path blocking
+- Helmet, XSS clean, Mongo sanitize, HPP, CORS
+
+See middleware:
+- `middleware/rateLimiters.js`
+- `middleware/botBlocker.js`
+- `middleware/error.js`
+
 ## Database Seeder
 
 To seed the database with users, bootcamps, courses and reviews with data from the "\_data" folder, run
@@ -71,6 +116,64 @@ yarn run data:destroy
 # Import all data
 yarn run data:import
 ```
+
+## Local Development
+
+Start API + Mongo + Redis locally (uses docker-compose.yml + docker-compose.override.yml automatically):
+
+```bash
+docker compose up -d
+```
+
+The app reads from `.env` and builds MongoDB/Redis URIs from individual components:
+- `MONGODB_HOST`, `MONGODB_DB`, `MONGODB_USERNAME`, `MONGODB_PASSWORD`
+- `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`
+
+Stop:
+```bash
+docker compose down
+```
+
+## Kamal Deploy (CI/CD)
+
+Kamal uses **kamal-proxy** (already running on your server) for SSL/routing—no separate Nginx needed.
+
+GitHub Actions auto-deploys via Kamal:
+- `main` → production (kodekamper.app)
+- `staging` → staging (staging.kodekamper.app)
+
+Kamal configs:
+- `config/deploy.yml` (production)
+- `config/deploy.staging.yml` (staging)
+
+Server directories:
+- Production: `/srv/www/production/kodekamper/`
+- Staging: `/srv/www/staging/kodekamper/`
+
+Accessories (Mongo/Redis) are managed by Kamal on ports:
+- Production: Mongo 27017, Redis 6379
+- Staging: Mongo 27018, Redis 6380
+
+## QA + Security (CI)
+
+Automated checks run on PRs and staging pushes:
+- ESLint + Prettier
+- Jest tests with coverage (Codecov upload)
+- npm audit
+- CodeQL SAST (scheduled + PRs)
+- Gitleaks secret scanning (PRs + main/staging)
+
+### Local pre-commit secret scan
+
+This repo installs a Husky pre-commit hook that runs:
+
+`gitleaks protect --redact --staged --config .gitleaks.toml`
+
+Install Gitleaks locally (macOS):
+
+`brew install gitleaks`
+
+Deploy workflow is gated on QA passing.
 
 #### Use Import Instead of Require in Node App
 

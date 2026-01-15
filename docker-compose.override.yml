@@ -1,0 +1,37 @@
+# Local development override (auto-loaded with docker-compose.yml)
+services:
+  api:
+    build:
+      context: .
+      target: dev
+    image: kodekamper-api:dev
+    ports:
+      - '5000:5000'
+    env_file:
+      - ./.env
+    environment:
+      NODE_ENV: development
+      MONGODB_HOST: ${MONGODB_HOST:-mongo:27017}
+      MONGODB_DB: ${MONGODB_DB:-kodekamper}
+      MONGODB_USERNAME: ${MONGODB_USERNAME:-}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD:-}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_USERNAME: ${REDIS_USERNAME:-}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  mongo:
+    ports:
+      - '27017:27017'
+
+  redis:
+    ports:
+      - '6379:6379'

@@ -1,0 +1,92 @@
+service: kodekamper-api-staging
+image: rodcyb3dev/kodekamper-api
+
+builder:
+  dockerfile: Dockerfile
+  target: staging
+  context: .
+
+servers:
+  web:
+    - YOUR_SERVER_IP
+
+ssh:
+  user: deploy
+
+proxy:
+  ssl: true
+  host: staging.kodekamper.app
+  app_port: 5000
+
+registry:
+  server: ghcr.io
+  username: RodCyb3Dev  # Replace with your GitHub username
+  password:
+    - REGISTRY_PASSWORD # GitHub Personal Access Token from .kamal/secrets
+
+env:
+  clear:
+    NODE_ENV: staging
+    PORT: 5000
+  secret:
+    - MONGODB_HOST
+    - MONGODB_DB
+    - MONGODB_USERNAME
+    - MONGODB_PASSWORD
+    - MONGODB_URI
+    - REDIS_HOST
+    - REDIS_PORT
+    - REDIS_USERNAME
+    - REDIS_PASSWORD
+    - REDIS_URL
+    - JWT_SECRET
+    - JWT_EXPIRE
+    - JWT_COOKIE_EXPIRE
+    - SMTP_HOST
+    - SMTP_PORT
+    - SMTP_EMAIL
+    - SMTP_PASSWORD
+    - FROM_EMAIL
+    - FROM_NAME
+    - GEOCODER_PROVIDER
+    - GEOCODER_API_KEY
+    - FILE_UPLOAD_PATH
+    - MAX_FILE_UPLOAD
+
+volumes:
+  - /srv/www/staging/kodekamper/uploads:/app/public/uploads
+
+builder:
+  arch: amd64
+
+healthcheck:
+  path: /api/v1/health
+  interval: 10
+  timeout: 5
+
+accessories:
+  mongo:
+    image: mongo:6
+    host: YOUR_SERVER_IP
+    port: 27018
+    volumes:
+      - /srv/www/staging/kodekamper/mongo:/data/db
+  redis:
+    image: redis:7-alpine
+    host: YOUR_SERVER_IP
+    port: 6380
+    volumes:
+      - /srv/www/staging/kodekamper/redis:/data
+
+logging:
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+# Set boot timeout for slow-starting applications
+boot:
+  limit: 60  # seconds
+
+# Keep last 5 versions for quick rollback
+retain_containers: 2
