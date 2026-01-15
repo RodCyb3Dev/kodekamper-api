@@ -55,6 +55,12 @@ const { doubleCsrfProtection, generateToken: generateCsrfToken } = doubleCsrf({
 // Apply CSRF protection to state-changing requests (POST, PUT, PATCH, DELETE)
 if (process.env.NODE_ENV !== 'test') {
   app.use(doubleCsrfProtection);
+  
+  // Endpoint for clients to obtain a CSRF token
+  app.get('/csrf-token', (req, res) => {
+    const token = generateCsrfToken(req, res);
+    res.json({ csrfToken: token });
+  });
 }
 
 // Block known scanning/bot user-agents
