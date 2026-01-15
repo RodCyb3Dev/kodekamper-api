@@ -5,6 +5,8 @@ on:
     workflows: ['QA']
     types:
       - completed
+    branches:
+      - staging  # Auto-deploy to staging only
   workflow_dispatch:
     inputs:
       environment:
@@ -17,24 +19,23 @@ on:
 
 jobs:
   deploy:
-    name: Deploy
+    name: Deploy to ${{ inputs.environment || 'staging' }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
+    environment: ${{ inputs.environment || 'staging' }}
     if: |
       (github.event_name == 'workflow_dispatch') ||
-      (github.event.workflow_run.conclusion == 'success' &&
-        (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'staging'))
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'staging')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Resolve destination
         id: dest
         run: |
           if [ -n "${{ inputs.environment }}" ]; then
             echo "destination=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "destination=production" >> "$GITHUB_OUTPUT"
           else
             echo "destination=staging" >> "$GITHUB_OUTPUT"
           fi
