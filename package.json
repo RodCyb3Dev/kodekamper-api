@@ -11,8 +11,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "jest --runInBand",
-    "test:ci": "jest --coverage --runInBand",
+    "test": "NODE_ENV=test jest --runInBand",
+    "test:ci": "NODE_ENV=test jest --coverage --runInBand",
     "prepare": "husky install"
   },
   "keywords": [
@@ -51,8 +51,22 @@
     "eslint-plugin-security": "^1.7.1",
     "husky": "^9.0.11",
     "jest": "^29.7.0",
+    "mongodb-memory-server": "^9.5.0",
     "nodemon": "^2.0.13",
     "prettier": "^3.2.5",
     "supertest": "^6.3.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/tests/"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
   }
 }

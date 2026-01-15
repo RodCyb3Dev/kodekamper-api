@@ -12,6 +12,46 @@ on:
 jobs:
   qa:
     runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:6
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand({ping: 1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      MONGODB_HOST: localhost:27017
+      MONGODB_DB: kodekamper_test
+      MONGODB_USERNAME: ''
+      MONGODB_PASSWORD: ''
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      REDIS_USERNAME: ''
+      REDIS_PASSWORD: ''
+      JWT_SECRET: test-jwt-secret-key-for-github-actions
+      JWT_EXPIRE: 30d
+      JWT_COOKIE_EXPIRE: 30
+      GEOCODER_PROVIDER: mapquest
+      GEOCODER_API_KEY: test-key
+      FILE_UPLOAD_PATH: ./public/uploads
+      MAX_FILE_UPLOAD: 1000000
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,19 +60,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: yarn
+          cache: npm
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Lint
-        run: yarn lint
+        run: npm run lint
 
       - name: Prettier
-        run: yarn format:check
+        run: npm run format:check
 
       - name: Tests
-        run: yarn test:ci
+        run: npm run test:ci
 
       - name: Audit
         run: npm audit --audit-level=high
