@@ -77,20 +77,37 @@ GEOCODER_PROVIDER=mapquest
 GEOCODER_API_KEY=<key>
 
 # App Config
+# App Config
 APP_NAME=KodeKamper
 APP_ENV=production
 APP_PORT=5000
+APP_BASE_URL=https://kodekamper.app
+
+# CSRF Protection
+CSRF_SECRET=<random-secret>
 ```
 
-**Staging** uses similar variables but with staging-specific values.
+**Staging** uses similar variables but with:
+- `APP_BASE_URL=https://staging.kodekamper.app`
+- Different database/Redis credentials
 
 ### 4. GitHub Actions Secrets
 Add these to GitHub repository secrets (Settings → Secrets and variables → Actions):
 
+**Required:**
 - `REGISTRY_PASSWORD` - GitHub PAT for container registry
 - `SSH_PRIVATE_KEY` - SSH key for deploy@37.27.186.68
-- `KAMAL_SECRETS_PRODUCTION` - Content of `.kamal/secrets.production`
-- `KAMAL_SECRETS_STAGING` - Content of `.kamal/secrets.staging`
+- `JWT_SECRET` - JWT signing secret
+- `CSRF_SECRET` - CSRF protection secret
+- `APP_BASE_URL` - Base URL (https://kodekamper.app or https://staging.kodekamper.app)
+- Database credentials (MONGODB_*)
+- Redis credentials (REDIS_*)
+- SMTP credentials for emails
+- Geocoder API key
+
+**Optional:**
+- `CODECOV_TOKEN` - For test coverage uploads
+- `GITLEAKS_LICENSE` - For Gitleaks secret scanning
 
 ## Deployment Process
 

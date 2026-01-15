@@ -4,7 +4,7 @@ const app = require('../app');
 const User = require('../models/User');
 
 let adminToken;
-let adminId;
+let _adminId; // eslint-disable-line no-unused-vars
 let testUserId;
 
 describe('Users API (Admin Only)', () => {
@@ -16,7 +16,7 @@ describe('Users API (Admin Only)', () => {
       password: 'password123',
       role: 'admin',
     });
-    adminId = admin._id;
+    _adminId = admin._id;
 
     // Login as admin
     const res = await request(app).post('/api/v1/auth/login').send({

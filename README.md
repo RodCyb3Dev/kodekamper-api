@@ -123,6 +123,15 @@ See `middleware/cache.js` for implementation.
 
 The API implements multiple security layers:
 
+### CSRF Protection
+- **Double-submit cookie pattern** using `csrf-csrf`
+- Automatic protection for POST/PUT/PATCH/DELETE requests
+- Secure, httpOnly cookies
+
+### Host Header Validation
+- Password reset URLs use trusted `APP_BASE_URL`
+- Prevents host header injection attacks
+
 ### Rate Limiting
 - **Global**: 100 requests per 10 minutes
 - **Auth routes**: 20 requests per 15 minutes (login, register, password reset)
@@ -138,6 +147,8 @@ The API implements multiple security layers:
 - **HPP**: HTTP parameter pollution protection
 - **CORS**: Cross-origin resource sharing
 - **Request size limit**: 10kb max body size
+
+**For complete security documentation, see [SECURITY.md](SECURITY.md)**
 
 See middleware:
 - `middleware/rateLimiters.js`

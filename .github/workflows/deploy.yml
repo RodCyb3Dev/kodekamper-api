@@ -70,6 +70,8 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_EXPIRE: ${{ secrets.JWT_EXPIRE }}
           JWT_COOKIE_EXPIRE: ${{ secrets.JWT_COOKIE_EXPIRE }}
+          CSRF_SECRET: ${{ secrets.CSRF_SECRET }}
+          APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}

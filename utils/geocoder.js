@@ -3,7 +3,7 @@ const NodeGeocoder = require('node-geocoder');
 // In test environment, use a mock geocoder to avoid API calls
 if (process.env.NODE_ENV === 'test') {
   module.exports = {
-    geocode: async (address) => [
+    geocode: async (_address) => [
       {
         latitude: 42.3601,
         longitude: -71.0589,

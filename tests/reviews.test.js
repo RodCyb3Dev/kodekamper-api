@@ -7,7 +7,7 @@ const User = require('../models/User');
 
 let userToken;
 let publisherToken;
-let userId;
+let _userId; // eslint-disable-line no-unused-vars
 let publisherId;
 let bootcampId;
 let reviewId;
@@ -21,7 +21,7 @@ describe('Reviews API', () => {
       password: 'password123',
       role: 'user',
     });
-    userId = user._id;
+    _userId = user._id;
 
     // Create a publisher
     const publisher = await User.create({

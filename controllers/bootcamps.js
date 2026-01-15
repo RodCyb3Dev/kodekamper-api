@@ -159,9 +159,15 @@ exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
   }
 
   // Create custom filename
-  file.name = `photo_${bootcamp._id}${path.parse(file.name).ext}`;
+  const uploadPath = process.env.FILE_UPLOAD_PATH;
+  const targetPath = path.resolve(path.join(uploadPath, file.name));
 
-  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+  // Ensure the resolved path stays within the intended upload directory
+  if (!targetPath.startsWith(path.resolve(uploadPath) + path.sep)) {
+    return next(new ErrorResponse('Invalid upload path', 400));
+  }
+
+  file.mv(targetPath, async (err) => {
     if (err) {
       console.error(err);
       return next(new ErrorResponse(`Problem with file upload`, 500));
