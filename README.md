@@ -70,72 +70,128 @@ Example monitor env: see docker/monitor/monitor.env.example
 
 ## Install Dependencies
 
-`yarn` or `npm i`
+```bash
+npm install
+```
+
+**Note:** This project uses npm. Node version is managed via `.nvmrc` (v20.11.1).
 
 ## Run App
 
-```
+```bash
 # Run in dev mode
-yarn run dev
+npm run dev
 
 # Run in prod mode
-yarn start
+npm start
 ```
 
-## Health Check
+## Health Check & Monitoring
 
-The API exposes a health endpoint for monitoring:
+The API includes a comprehensive health endpoint:
 
-- `GET /api/v1/health` returns Mongo + Redis status and uptime.
+- **Endpoint**: `GET /api/v1/health`
+- **Returns**: MongoDB connection status, Redis connection status, and uptime
+- **Use case**: Docker health checks, load balancer monitoring, uptime tools
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "ok",
+    "mongo": "connected",
+    "redis": "connected",
+    "uptimeSeconds": 1234.56
+  }
+}
+```
 
 ## Redis Caching
 
-Caching is enabled for:
+Automatic response caching is enabled for:
 
-- `GET /api/v1/bootcamps`
-- `GET /api/v1/health`
+- `GET /api/v1/bootcamps` (60s TTL)
+- `GET /api/v1/health` (10s TTL)
 
-Caching is automatic when `REDIS_URL` is set.
+Caching activates automatically when Redis is available. The API supports both:
+- Full connection URL: `REDIS_URL`
+- Component-based: `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`
 
-## Security Notes
+See `middleware/cache.js` for implementation.
 
-The server enables:
+## Security Features
 
-- Request size limit (10kb)
-- Global rate limiting + stricter auth rate limits
-- Bot/scanner user-agent and path blocking
-- Helmet, XSS clean, Mongo sanitize, HPP, CORS
+The API implements multiple security layers:
+
+### Rate Limiting
+- **Global**: 100 requests per 10 minutes
+- **Auth routes**: 20 requests per 15 minutes (login, register, password reset)
+
+### Bot & Scanner Protection
+- Blocks common scanner user-agents (Nikto, sqlmap, etc.)
+- Blocks suspicious paths (wp-admin, phpmyadmin, .env, etc.)
+
+### Security Headers & Sanitization
+- **Helmet**: Secure HTTP headers
+- **XSS-clean**: Cross-site scripting protection
+- **express-mongo-sanitize**: NoSQL injection prevention
+- **HPP**: HTTP parameter pollution protection
+- **CORS**: Cross-origin resource sharing
+- **Request size limit**: 10kb max body size
 
 See middleware:
-
 - `middleware/rateLimiters.js`
 - `middleware/botBlocker.js`
 - `middleware/error.js`
 
 ## Database Seeder
 
-To seed the database with users, bootcamps, courses and reviews with data from the "\_data" folder, run
+Seed the database with users, bootcamps, courses and reviews from the `_data/` folder:
 
-```
+```bash
 # Destroy all data
-yarn run data:destroy
+npm run data:destroy
 
 # Import all data
-yarn run data:import
+npm run data:import
 ```
+
+**Note**: Seeder data is for development only. Tests create their own isolated test data.
 
 ## Local Development
 
-Start API + Mongo + Redis locally (uses docker-compose.yml + docker-compose.override.yml automatically):
+### Docker Compose Setup
+
+Start API + MongoDB + Redis locally:
 
 ```bash
 docker compose up -d
 ```
 
-The app reads from `.env` and builds MongoDB/Redis URIs from individual components:
+The stack includes:
+- **API**: Multi-stage Dockerfile with dev target, hot reload via nodemon
+- **MongoDB 6**: Persistent data in `mongo_data` volume
+- **Redis 7**: Persistent data in `redis_data` volume
+- **Port**: 5001 (to avoid macOS AirPlay conflict on 5000)
 
+### Environment Variables
+
+The app auto-builds database URIs from components (see `config/db.js` and `utils/redisClient.js`):
+
+**MongoDB**:
 - `MONGODB_HOST`, `MONGODB_DB`, `MONGODB_USERNAME`, `MONGODB_PASSWORD`
-- `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`
+- Or override with: `MONGODB_URI`
+
+**Redis**:
+- `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`  
+- Or override with: `REDIS_URL`
+
+### Docker Multi-Stage Builds
+
+The `Dockerfile` includes optimized targets:
+- **dev**: Development with nodemon, all dependencies
+- **staging**: PM2 cluster mode, production dependencies
+- **prod**: PM2 cluster mode, optimized for production
 
 Stop:
 
@@ -143,51 +199,99 @@ Stop:
 docker compose down
 ```
 
-## Kamal Deploy (CI/CD)
+## Kamal Deployment (CI/CD)
 
-Kamal uses **kamal-proxy** (already running on your server) for SSL/routing—no separate Nginx needed.
+Kamal 2.0 handles zero-downtime deployments with **kamal-proxy** for SSL/routing (no Nginx required).
 
-GitHub Actions auto-deploys via Kamal:
+### Automatic Deployments
 
-- `main` → production (kodekamper.app)
-- `staging` → staging (staging.kodekamper.app)
+GitHub Actions triggers deployment on:
+- `main` branch → **Production** (kodekamper.app)
+- `staging` branch → **Staging** (staging.kodekamper.app)
+
+**Deployment is gated on QA passing**: ESLint, Prettier, Jest tests, npm audit.
+
+### Configuration
 
 Kamal configs:
-
 - `config/deploy.yml` (production)
 - `config/deploy.staging.yml` (staging)
 
-Server directories:
+Secrets:
+- `.kamal/secrets.production` (use examples as templates)
+- `.kamal/secrets.staging`
 
-- Production: `/srv/www/production/kodekamper/`
-- Staging: `/srv/www/staging/kodekamper/`
+### Server Setup
 
-Accessories (Mongo/Redis) are managed by Kamal on ports:
+**Production** (`/srv/www/production/kodekamper/`):
+- MongoDB: localhost:27017
+- Redis: localhost:6379
+- SSL: kodekamper.app (kamal-proxy)
 
-- Production: Mongo 27017, Redis 6379
-- Staging: Mongo 27018, Redis 6380
+**Staging** (`/srv/www/staging/kodekamper/`):
+- MongoDB: localhost:27018  
+- Redis: localhost:6380
+- SSL: staging.kodekamper.app (kamal-proxy)
 
-## QA + Security (CI)
+Accessories (MongoDB/Redis) are managed by Kamal as Docker containers.
 
-Automated checks run on PRs and staging pushes:
+## Testing & QA
 
-- ESLint + Prettier
-- Jest tests with coverage (Codecov upload)
-- npm audit
-- CodeQL SAST (scheduled + PRs)
-- Gitleaks secret scanning (PRs + main/staging)
+### Comprehensive Test Suite
 
-### Local pre-commit secret scan
+The project includes **6 test suites** with **100+ test cases**:
 
-This repo installs a Husky pre-commit hook that runs:
+```bash
+# Run tests locally
+npm test
 
-`gitleaks protect --redact --staged --config .gitleaks.toml`
+# Run with coverage
+npm run test:ci
+```
 
-Install Gitleaks locally (macOS):
+**Test Coverage**:
+- `tests/auth.test.js` - Authentication & authorization (register, login, JWT)
+- `tests/bootcamps.test.js` - Bootcamp CRUD, pagination, filtering, geolocation
+- `tests/courses.test.js` - Course management, relationships
+- `tests/reviews.test.js` - Review system, ratings, ownership
+- `tests/users.test.js` - Admin user management
+- `tests/health.test.js` - Health endpoint monitoring
 
-`brew install gitleaks`
+**Test Infrastructure**:
+- Uses **mongodb-memory-server** for local testing (no MongoDB required)
+- GitHub Actions uses real MongoDB/Redis service containers
+- Mock geocoder to avoid external API calls
+- Automatic database cleanup between tests
+- 30-second timeout for integration tests
 
-Deploy workflow is gated on QA passing.
+### CI/CD Quality Gates
+
+Automated checks run on every PR and push to staging:
+
+#### Code Quality
+- ✅ **ESLint**: Code linting with security plugin
+- ✅ **Prettier**: Code formatting validation
+- ✅ **Jest**: Full test suite with coverage reports
+- ✅ **npm audit**: Dependency vulnerability scanning
+- ✅ **Codecov**: Coverage tracking and reporting
+
+#### Security Scanning
+- ✅ **CodeQL**: Static analysis security testing (SAST)
+- ✅ **Gitleaks**: Secret scanning (API keys, tokens, passwords)
+
+### Local Pre-commit Hooks
+
+Husky runs Gitleaks before every commit:
+
+```bash
+# Install Gitleaks (macOS)
+brew install gitleaks
+
+# Hook runs automatically on git commit
+gitleaks protect --redact --staged --config .gitleaks.toml
+```
+
+**Deployment is gated on all QA checks passing.**
 
 #### Use Import Instead of Require in Node App
 
