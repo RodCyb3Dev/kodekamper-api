@@ -27,10 +27,10 @@ const app = express();
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 
-// Body parser
+// Body parser (required for CSRF token extraction from request body)
 app.use(express.json({ limit: '10kb' }));
 
-// Cookie parser
+// Cookie parser (required for CSRF protection)
 app.use(cookieParser());
 
 // CSRF protection
@@ -52,16 +52,19 @@ const { doubleCsrfProtection, generateToken: generateCsrfToken } = doubleCsrf({
     (req.query && (req.query._csrf || req.query._csrfToken)),
 });
 
-// Apply CSRF protection to state-changing requests (POST, PUT, PATCH, DELETE)
-if (process.env.NODE_ENV !== 'test') {
-  app.use(doubleCsrfProtection);
-  
-  // Endpoint for clients to obtain a CSRF token
-  app.get('/csrf-token', (req, res) => {
-    const token = generateCsrfToken(req, res);
-    res.json({ csrfToken: token });
-  });
-}
+// Apply CSRF protection (skip in test environment)
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'test') {
+    return next();
+  }
+  doubleCsrfProtection(req, res, next);
+});
+
+// Endpoint for clients to obtain a CSRF token
+app.get('/csrf-token', (req, res) => {
+  const token = generateCsrfToken(req, res);
+  res.json({ csrfToken: token });
+});
 
 // Block known scanning/bot user-agents
 app.use(botBlocker);
