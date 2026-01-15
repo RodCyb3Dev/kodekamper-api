@@ -16,5 +16,12 @@ node_modules/
 # dotenv environment variables file
 config/config.env
 
+# Kamal secrets
+.kamal/secrets
+.kamal/secrets.*
+!.kamal/secrets.*.example
+
 # Others
 kodekamper_specs.md
+.github/copilot-instructions.md
+.env

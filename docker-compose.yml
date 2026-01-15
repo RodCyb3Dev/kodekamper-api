@@ -1,39 +1,26 @@
+# Base compose - shared services for all environments
 services:
-  api:
-    build:
-      context: .
-      target: dev
-    image: kodekamper-api:dev
-    ports:
-      - '5000:5000'
-    env_file:
-      - ./config/config.env
-    environment:
-      NODE_ENV: development
-      MONGODB_URI: mongodb://mongo:27017/kodekamper
-      REDIS_URL: redis://redis:6379
-    volumes:
-      - .:/app
-      - /app/node_modules
-    depends_on:
-      - mongo
-      - redis
-
   mongo:
     image: mongo:6
     restart: unless-stopped
-    ports:
-      - '27017:27017'
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    ports:
-      - '6379:6379'
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
 volumes:
   mongo_data:
