@@ -10,6 +10,16 @@
     "ecmaVersion": "latest"
   },
   "rules": {
-    "no-console": "off"
+    "no-console": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^(next|_)",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "no-useless-escape": "off",
+    "security/detect-unsafe-regex": "warn",
+    "security/detect-object-injection": "warn"
   }
 }

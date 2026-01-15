@@ -1,12 +1,6 @@
 const express = require('express');
 const reviewsController = '../controllers/reviews';
-const {
-  getReviews,
-  getReview,
-  addReview,
-  updateReview,
-  deleteReview
-} = require(reviewsController);
+const { getReviews, getReview, addReview, updateReview, deleteReview } = require(reviewsController);
 
 const Review = require('../models/Review');
 
@@ -20,7 +14,7 @@ router
   .get(
     advancedResults(Review, {
       path: 'bootcamp',
-      select: 'name description'
+      select: 'name description',
     }),
     getReviews
   )

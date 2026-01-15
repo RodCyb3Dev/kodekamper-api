@@ -11,9 +11,7 @@ const pingRedis = async () => {
   try {
     const pong = await Promise.race([
       client.ping(),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Redis timeout')), 1500)
-      )
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Redis timeout')), 1500)),
     ]);
 
     return { ok: pong === 'PONG' };
@@ -33,7 +31,7 @@ exports.getHealth = asyncHandler(async (req, res) => {
       mongo: mongoState === 1 ? 'connected' : 'disconnected',
       redis: redisStatus.ok ? 'connected' : 'disconnected',
       redisMessage: redisStatus.message || undefined,
-      uptimeSeconds: process.uptime()
-    }
+      uptimeSeconds: process.uptime(),
+    },
   });
 });

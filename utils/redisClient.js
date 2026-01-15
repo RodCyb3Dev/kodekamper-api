@@ -37,7 +37,7 @@ const getRedisClient = async () => {
   isConnecting = true;
   redisClient = createClient({ url });
 
-  redisClient.on('error', err => {
+  redisClient.on('error', (err) => {
     console.error(`Redis Error: ${err.message}`.red.underline);
   });
 
