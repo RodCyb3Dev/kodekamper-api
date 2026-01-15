@@ -34,7 +34,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 
 // CSRF protection
-const { doubleCsrfProtection } = doubleCsrf({
+const { doubleCsrfProtection, generateToken: generateCsrfToken } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET || 'default-csrf-secret-change-in-production',
   cookieName: '__Host-psifi.x-csrf-token',
   cookieOptions: {
@@ -45,6 +45,11 @@ const { doubleCsrfProtection } = doubleCsrf({
   },
   size: 64,
   ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
+  getTokenFromRequest: (req) =>
+    req.headers['x-csrf-token'] ||
+    req.headers['x-xsrf-token'] ||
+    (req.body && (req.body._csrf || req.body._csrfToken)) ||
+    (req.query && (req.query._csrf || req.query._csrfToken)),
 });
 
 // Apply CSRF protection to state-changing requests (POST, PUT, PATCH, DELETE)
@@ -67,21 +72,19 @@ app.use(fileupload());
 app.use(mongoSanitize());
 
 // Set security headers
-app.use(helmet({ contentSecurityPolicy: false }));
-/*
+app.use(helmet());
 app.use(
   helmet.contentSecurityPolicy({
     useDefaults: false,
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc:  ["'self' https: 'unsafe-inline'"],
+      styleSrc: ["'self' https: 'unsafe-inline'"],
       scriptSrc: ["'unsafe-inline'", "https://getbootstrap.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
   })
 );
-*/
 
 // Prevent XSS attacks
 app.use(xss());
@@ -104,7 +107,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
-app.use('/api/v1/auth', auth);
+app.use(
+  '/api/v1/auth',
+  (req, res, next) => {
+    // Ensure a CSRF token is generated and attached for safe methods (e.g., login page / token fetch)
+    if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+      generateCsrfToken(req, res, next);
+    } else {
+      next();
+    }
+  },
+  auth
+);
 app.use('/api/v1/users', users);
 app.use('/api/v1/reviews', reviews);
 
