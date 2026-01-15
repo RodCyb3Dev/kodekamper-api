@@ -9,8 +9,10 @@ WORKDIR /app
 RUN apk add --no-cache dumb-init
 
 # Create non-root user matching server 'deploy' user (UID 1000)
-RUN addgroup -g 1000 deploy && \
-    adduser -D -u 1000 -G deploy deploy
+# Use existing node group (GID 1000) if present, or create deploy group
+RUN deluser --remove-home node || true && \
+    (addgroup -g 1000 deploy 2>/dev/null || true) && \
+    adduser -D -u 1000 -G $(getent group 1000 | cut -d: -f1) deploy
 
 # Copy package files
 COPY --chown=deploy:deploy package.json yarn.lock ./
