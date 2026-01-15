@@ -203,13 +203,23 @@ docker compose down
 
 Kamal 2.0 handles zero-downtime deployments with **kamal-proxy** for SSL/routing (no Nginx required).
 
+### Git Branching Strategy
+
+- **main** - Main development branch
+- **staging** - Auto-deploys to staging.kodekamper.app when updated
+- **production** - Manual deployment to kodekamper.app only
+
 ### Automatic Deployments
 
-GitHub Actions triggers deployment on:
-- `main` branch → **Production** (kodekamper.app)
-- `staging` branch → **Staging** (staging.kodekamper.app)
+**Staging (Automatic):**
+1. Push to `staging` branch (or merge `main` → `staging`)
+2. QA workflow runs (lint, test, audit)
+3. If QA passes → Auto-deploy to staging.kodekamper.app
 
-**Deployment is gated on QA passing**: ESLint, Prettier, Jest tests, npm audit.
+**Production (Manual):**
+- Go to GitHub Actions → Deploy (Staging/Production) → Run workflow
+- Select "production" environment
+- Manual approval required
 
 ### Configuration
 
