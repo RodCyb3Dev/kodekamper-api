@@ -1,6 +1,6 @@
 const fs = require('fs');
-const mongoose = require('mongoose');
-const colors = require('colors');
+const _mongoose = require('mongoose');
+const _colors = require('colors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 
@@ -14,28 +14,20 @@ const User = require('./models/User');
 const Review = require('./models/Review');
 
 // Connect to DB
-connectDB()
+connectDB();
 
 // Read JSON files
 //Bootcamps
-const bootcamps = JSON.parse(
-  fs.readFileSync(`${__dirname}/_data/bootcamps.json`, 'utf-8')
-);
+const bootcamps = JSON.parse(fs.readFileSync(`${__dirname}/_data/bootcamps.json`, 'utf-8'));
 
 // Courses
-const courses = JSON.parse(
-  fs.readFileSync(`${__dirname}/_data/courses.json`, 'utf-8')
-);
+const courses = JSON.parse(fs.readFileSync(`${__dirname}/_data/courses.json`, 'utf-8'));
 
 // Reviews
-const reviews = JSON.parse(
-  fs.readFileSync(`${__dirname}/_data/reviews.json`, 'utf-8')
-);
+const reviews = JSON.parse(fs.readFileSync(`${__dirname}/_data/reviews.json`, 'utf-8'));
 
 // Users
-const users = JSON.parse(
-  fs.readFileSync(`${__dirname}/_data/users.json`, 'utf-8')
-);
+const users = JSON.parse(fs.readFileSync(`${__dirname}/_data/users.json`, 'utf-8'));
 
 // Import into DB
 const importData = async () => {

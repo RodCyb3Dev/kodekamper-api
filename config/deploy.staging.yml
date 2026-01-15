@@ -5,6 +5,7 @@ builder:
   dockerfile: Dockerfile
   target: staging
   context: .
+  arch: amd64
 
 servers:
   web:
@@ -55,9 +56,6 @@ env:
 
 volumes:
   - /srv/www/staging/kodekamper/uploads:/app/public/uploads
-
-builder:
-  arch: amd64
 
 healthcheck:
   path: /api/v1/health

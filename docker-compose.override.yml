@@ -6,9 +6,9 @@ services:
       target: dev
     image: kodekamper-api:dev
     ports:
-      - '5001:5000'  # Avoid macOS ControlCenter conflict on port 5000
+      - '5001:5000' # Avoid macOS ControlCenter conflict on port 5000
     env_file:
-      - ./.env.docker  # Use Docker-specific env vars
+      - ./.env.docker # Use Docker-specific env vars
     volumes:
       - .:/app
       - /app/node_modules

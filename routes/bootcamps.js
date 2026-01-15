@@ -1,19 +1,19 @@
-const express = require('express')
-const { 
-  getBootcamps, 
-  getBootcamp, 
-  createBootcamp, 
-  updateBootcamp, 
-  deleteBootcamp, 
-  getBootcampsInRadius, 
-  bootcampPhotoUpload 
-} = require('../controllers/bootcamps')
+const express = require('express');
+const {
+  getBootcamps,
+  getBootcamp,
+  createBootcamp,
+  updateBootcamp,
+  deleteBootcamp,
+  getBootcampsInRadius,
+  bootcampPhotoUpload,
+} = require('../controllers/bootcamps');
 
 const Bootcamp = require('../models/Bootcamp');
 
 //Include other resource router
-const courseRouter = require('./courses')
-const reviewRouter = require('./reviews')
+const courseRouter = require('./courses');
+const reviewRouter = require('./reviews');
 
 const router = express.Router();
 
@@ -29,9 +29,7 @@ const { protect, authorize } = require('../middleware/auth');
 router.route('/radius/:zipcode/:distance').get(getBootcampsInRadius);
 
 // Upload bootcamp photo
-router
-  .route('/:id/photo')
-  .put(protect, authorize('publisher', 'admin'), bootcampPhotoUpload);
+router.route('/:id/photo').put(protect, authorize('publisher', 'admin'), bootcampPhotoUpload);
 
 // bootcamps
 router

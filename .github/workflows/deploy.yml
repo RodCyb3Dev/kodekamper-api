@@ -2,7 +2,7 @@ name: Deploy (Staging/Production)
 
 on:
   workflow_run:
-    workflows: ["QA"]
+    workflows: ['QA']
     types:
       - completed
   workflow_dispatch:

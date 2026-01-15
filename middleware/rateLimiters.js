@@ -4,7 +4,7 @@ const globalLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 100,
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
 });
 
 const authLimiter = rateLimit({
@@ -12,10 +12,10 @@ const authLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  message: 'Too many auth attempts, please try again later.'
+  message: 'Too many auth attempts, please try again later.',
 });
 
 module.exports = {
   globalLimiter,
-  authLimiter
+  authLimiter,
 };
