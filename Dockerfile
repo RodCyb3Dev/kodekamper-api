@@ -12,21 +12,23 @@ RUN apk add --no-cache dumb-init
 # Use existing node group (GID 1000) if present, or create deploy group
 RUN deluser --remove-home node || true && \
     (addgroup -g 1000 deploy 2>/dev/null || true) && \
-    adduser -D -u 1000 -G $(getent group 1000 | cut -d: -f1) deploy
+    adduser -D -u 1000 -G $(getent group 1000 | cut -d: -f1) deploy && \
+    chown -R deploy:deploy /app
 
 # Copy package files
-COPY --chown=deploy:deploy package.json yarn.lock ./
+COPY --chown=deploy:deploy package.json package-lock.json ./
 
 # Development dependencies stage
 FROM base AS deps
 USER deploy
-RUN yarn install --frozen-lockfile --production=false
+RUN npm ci
 
 # Production dependencies stage
 FROM base AS prod-deps
 USER deploy
-RUN yarn install --frozen-lockfile --production=true && \
-    yarn cache clean
+# Skip prepare scripts (like husky) in Docker builds
+RUN npm ci --omit=dev --ignore-scripts && \
+    npm cache clean --force
 
 # Development stage
 FROM base AS dev
@@ -38,14 +40,14 @@ EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:5000/api/v1/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["yarn", "run", "dev"]
+CMD ["npm", "run", "dev"]
 
 # Production base stage
 FROM base AS production-base
 USER deploy
 COPY --from=prod-deps --chown=deploy:deploy /app/node_modules ./node_modules
 COPY --chown=deploy:deploy . .
-RUN yarn global add pm2@5.3.0
+RUN npm install -g pm2@5.3.0
 
 # Production stage
 FROM production-base AS prod

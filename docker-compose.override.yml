@@ -6,19 +6,9 @@ services:
       target: dev
     image: kodekamper-api:dev
     ports:
-      - '5000:5000'
+      - '5001:5000'  # Avoid macOS ControlCenter conflict on port 5000
     env_file:
-      - ./.env
-    environment:
-      NODE_ENV: development
-      MONGODB_HOST: ${MONGODB_HOST:-mongo:27017}
-      MONGODB_DB: ${MONGODB_DB:-kodekamper}
-      MONGODB_USERNAME: ${MONGODB_USERNAME:-}
-      MONGODB_PASSWORD: ${MONGODB_PASSWORD:-}
-      REDIS_HOST: ${REDIS_HOST:-redis}
-      REDIS_PORT: ${REDIS_PORT:-6379}
-      REDIS_USERNAME: ${REDIS_USERNAME:-}
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      - ./.env.docker  # Use Docker-specific env vars
     volumes:
       - .:/app
       - /app/node_modules
