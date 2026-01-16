@@ -59,10 +59,14 @@ jobs:
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
           SSH_USER: ${{ secrets.SSH_USER }}
           KAMAL_HOST: ${{ secrets.KAMAL_HOST }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
           MONGODB_HOST: ${{ secrets.MONGODB_HOST }}
           MONGODB_DB: ${{ secrets.MONGODB_DB }}
           MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
           MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
           REDIS_HOST: ${{ secrets.REDIS_HOST }}
           REDIS_PORT: ${{ secrets.REDIS_PORT }}
           REDIS_USERNAME: ${{ secrets.REDIS_USERNAME }}
