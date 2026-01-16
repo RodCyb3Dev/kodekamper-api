@@ -34,6 +34,7 @@ env:
     NODE_ENV: staging
     PORT: 5000
   secret:
+    - SERVER_IP
     - MONGODB_HOST
     - MONGODB_DB
     - MONGODB_USERNAME
