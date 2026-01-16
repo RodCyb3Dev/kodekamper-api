@@ -80,10 +80,21 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 // @route     PUT /api/v1/auth/updatedetails
 // @access    Private
 exports.updateDetails = asyncHandler(async (req, res, next) => {
-  const fieldsToUpdate = {
-    name: req.body.name,
-    email: req.body.email,
-  };
+  const { name, email } = req.body;
+
+  // Ensure update values are simple literals to avoid NoSQL injection
+  if ((name !== undefined && typeof name !== 'string') ||
+      (email !== undefined && typeof email !== 'string')) {
+    return next(new ErrorResponse('Invalid name or email', 400));
+  }
+
+  const fieldsToUpdate = {};
+  if (name !== undefined) {
+    fieldsToUpdate.name = name;
+  }
+  if (email !== undefined) {
+    fieldsToUpdate.email = email;
+  }
 
   const user = await User.findByIdAndUpdate(
     { _id: { $eq: req.user.id } },
