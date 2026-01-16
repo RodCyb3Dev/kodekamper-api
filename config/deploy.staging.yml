@@ -18,10 +18,10 @@ proxy:
   ssl: true
   host: staging.kodekamper.app
   app_port: 5000
-  #healthcheck:
-  #  interval: 10
-  #  path: /api/v1/health
-  #  timeout: 5
+  healthcheck:
+    interval: 10
+    path: /api/v1/health
+    timeout: 5
 
 registry:
   server: ghcr.io
