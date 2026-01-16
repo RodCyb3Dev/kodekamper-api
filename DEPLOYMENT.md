@@ -3,7 +3,7 @@
 ## Server Preparation Status ✅
 
 ### Infrastructure Ready
-- **Server**: 37.27.186.68
+- **Server**: YOUR_SERVER_IP
 - **User**: deploy (UID: 1001, GID: 1001)
 - **Docker**: v28.5.1 ✅
 - **Docker Group**: deploy user has docker permissions ✅
@@ -88,15 +88,22 @@ CSRF_SECRET=<random-secret>
 ```
 
 **Staging** uses similar variables but with:
+- `STAGING_SERVER_IP=YOUR_STAGING_SERVER_IP` (set this to your staging server IP)
 - `APP_BASE_URL=https://staging.kodekamper.app`
 - Different database/Redis credentials
+
+**Production** requires:
+- `PRODUCTION_SERVER_IP=YOUR_PRODUCTION_SERVER_IP` (set this to your production server IP)
+- `APP_BASE_URL=https://kodekamper.app`
+
+> **Note**: Server IPs MUST be set via environment variables (`PRODUCTION_SERVER_IP`, `STAGING_SERVER_IP`) in your `.kamal/secrets` files. Never commit actual IP addresses to version control.
 
 ### 4. GitHub Actions Secrets
 Add these to GitHub repository secrets (Settings → Secrets and variables → Actions):
 
 **Required:**
 - `REGISTRY_PASSWORD` - GitHub PAT for container registry
-- `SSH_PRIVATE_KEY` - SSH key for deploy@37.27.186.68
+- `SSH_PRIVATE_KEY` - SSH key for deploy@YOUR_SERVER_IP
 - `JWT_SECRET` - JWT signing secret
 - `CSRF_SECRET` - CSRF protection secret
 - `APP_BASE_URL` - Base URL (https://kodekamper.app or https://staging.kodekamper.app)
@@ -243,12 +250,12 @@ kamal accessory restart redis
 
 ### SSH into Server
 ```bash
-ssh deploy@37.27.186.68
+ssh deploy@YOUR_SERVER_IP
 ```
 
 ### View Running Containers
 ```bash
-ssh deploy@37.27.186.68 "docker ps"
+ssh deploy@YOUR_SERVER_IP "docker ps"
 ```
 
 ## Health Check
@@ -284,7 +291,7 @@ Expected response:
 kamal app logs
 
 # Check if ports are in use
-ssh deploy@37.27.186.68 "docker ps -a"
+ssh deploy@YOUR_SERVER_IP "docker ps -a"
 
 # Remove old containers
 kamal app remove
@@ -300,7 +307,7 @@ kamal accessory logs mongodb
 kamal accessory restart mongodb
 
 # Verify MongoDB port
-ssh deploy@37.27.186.68 "docker ps | grep mongo"
+ssh deploy@YOUR_SERVER_IP "docker ps | grep mongo"
 ```
 
 ### Redis Connection Issues
@@ -315,7 +322,7 @@ kamal accessory restart redis
 ### SSL Certificate Issues
 ```bash
 # Check kamal-proxy logs
-ssh deploy@37.27.186.68 "docker logs kamal-proxy --tail 100"
+ssh deploy@YOUR_SERVER_IP "docker logs kamal-proxy --tail 100"
 
 # kamal-proxy handles SSL automatically via Let's Encrypt
 ```
@@ -323,7 +330,7 @@ ssh deploy@37.27.186.68 "docker logs kamal-proxy --tail 100"
 ### Image Pull Errors
 ```bash
 # Login to GitHub Container Registry on server
-ssh deploy@37.27.186.68
+ssh deploy@YOUR_SERVER_IP
 echo $GITHUB_PAT | docker login ghcr.io -u RodCyb3Dev --password-stdin
 ```
 
@@ -352,12 +359,12 @@ kamal deploy --skip-push=false
 
 ### Clean Up Old Images
 ```bash
-ssh deploy@37.27.186.68 "docker system prune -a -f"
+ssh deploy@YOUR_SERVER_IP "docker system prune -a -f"
 ```
 
 ### Monitor Resources
 ```bash
-ssh deploy@37.27.186.68 "docker stats"
+ssh deploy@YOUR_SERVER_IP "docker stats"
 ```
 
 ## Security Notes

@@ -9,7 +9,7 @@ builder:
 
 servers:
   web:
-    - 37.27.186.68
+    - <%= ENV.fetch('PRODUCTION_SERVER_IP', 'YOUR_PRODUCTION_SERVER_IP') %>
 
 ssh:
   user: deploy
@@ -68,13 +68,13 @@ healthcheck:
 accessories:
   mongo:
     image: mongo:6
-    host: 37.27.186.68
+    host: <%= ENV.fetch('PRODUCTION_SERVER_IP', 'YOUR_PRODUCTION_SERVER_IP') %>
     port: 27017
     volumes:
       - /srv/www/production/kodekamper/mongo:/data/db
   redis:
     image: redis:7-alpine
-    host: 37.27.186.68
+    host: <%= ENV.fetch('PRODUCTION_SERVER_IP', 'YOUR_PRODUCTION_SERVER_IP') %>
     port: 6379
     volumes:
       - /srv/www/production/kodekamper/redis:/data
