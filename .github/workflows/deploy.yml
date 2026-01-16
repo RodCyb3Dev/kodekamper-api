@@ -8,7 +8,7 @@ on:
     types:
       - completed
     branches:
-      - staging  # Auto-deploy to staging only
+      - staging # Auto-deploy to staging only
   workflow_dispatch:
     inputs:
       environment:

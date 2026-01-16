@@ -1,9 +1,9 @@
 /**
  * CSRF Protection Middleware
- * 
+ *
  * This middleware wrapper ensures CSRF protection is applied in production/development
  * but skipped in test environments for easier integration testing.
- * 
+ *
  * CodeQL Note: This explicit wrapper helps static analysis tools understand
  * that CSRF protection is always registered (unconditionally) in the middleware chain,
  * with the environment check happening at runtime inside the middleware logic.

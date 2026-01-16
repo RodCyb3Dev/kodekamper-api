@@ -115,6 +115,7 @@ You already have security scanning with:
 - ✅ **Gitleaks** - Secret detection (pre-commit + CI)
 
 ESLint catches most issues that CodeQL finds, like:
+
 - SQL/NoSQL injection
 - XSS vulnerabilities
 - Unsafe regex patterns

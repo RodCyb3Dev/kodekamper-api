@@ -1,10 +1,10 @@
-name: "CodeQL Config"
+name: 'CodeQL Config'
 
 # Specify paths to exclude from analysis
 paths-ignore:
   - 'node_modules/**'
   - 'tests/**'
-  - 'public/**'  # Exclude vendored libraries (Bootstrap, jQuery)
+  - 'public/**' # Exclude vendored libraries (Bootstrap, jQuery)
   - '_data/**'
 
 # Configure query filters

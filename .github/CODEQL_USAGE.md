@@ -7,9 +7,11 @@ CodeQL CLI is now installed and configured.
 ## Quick Commands
 
 ### Run Full Security Scan
+
 ```bash
 npm run codeql:scan
 ```
+
 This creates a database, runs analysis, and generates `codeql-results.sarif`.
 
 ### Individual Steps
@@ -30,6 +32,7 @@ npm run codeql:clean
 ### Option 1: VS Code SARIF Viewer (Recommended)
 
 1. Install VS Code extension:
+
    ```bash
    code --install-extension MS-SarifVSCode.sarif-viewer
    ```
@@ -62,14 +65,17 @@ cat codeql-results.sarif | jq '.runs[0].results[] | {rule: .ruleId, message: .me
 ### Daily Development
 
 Use **ESLint** for instant feedback:
+
 ```bash
 npm run lint
 ```
+
 ESLint catches 80% of what CodeQL finds, in seconds.
 
 ### Before Committing
 
 Run **all quality checks**:
+
 ```bash
 npm run lint && npm run format:check && npm test
 ```
@@ -77,14 +83,17 @@ npm run lint && npm run format:check && npm test
 ### Before Opening PR
 
 Run **CodeQL scan locally**:
+
 ```bash
 npm run codeql:scan
 ```
+
 This ensures you catch security issues before GitHub Actions runs.
 
 ### Weekly/Monthly
 
 Run **full security suite**:
+
 ```bash
 npm audit
 npm run codeql:scan
@@ -93,16 +102,17 @@ brew upgrade codeql  # Keep CodeQL updated
 
 ## Comparison: ESLint vs CodeQL
 
-| Tool | Speed | Coverage | When to Use |
-|------|-------|----------|-------------|
-| **ESLint** | 3-5 sec | 80% of security issues | During development |
-| **CodeQL** | 2-3 min | 100% comprehensive analysis | Before PR, weekly |
+| Tool       | Speed   | Coverage                    | When to Use        |
+| ---------- | ------- | --------------------------- | ------------------ |
+| **ESLint** | 3-5 sec | 80% of security issues      | During development |
+| **CodeQL** | 2-3 min | 100% comprehensive analysis | Before PR, weekly  |
 
 ## Common Scenarios
 
 ### "I have 50 security warnings!"
 
 Most are false positives or low priority. Focus on:
+
 1. **High severity** issues first
 2. **CWE-89** (SQL/NoSQL injection) - Always fix
 3. **CWE-79** (XSS) - Always fix
@@ -111,6 +121,7 @@ Most are false positives or low priority. Focus on:
 ### "CodeQL found something ESLint didn't"
 
 CodeQL does deeper data flow analysis. Common findings:
+
 - Host header injection (we fixed this)
 - Cookie security issues (we have CSRF protection)
 - Complex injection patterns
@@ -129,6 +140,7 @@ npm run codeql:create-db
 ### Faster Scans
 
 Skip non-critical code:
+
 ```bash
 # Add to .gitignore (already done)
 codeql-db/
@@ -138,6 +150,7 @@ codeql-results.sarif
 ### Only Scan Changed Files
 
 For incremental analysis:
+
 ```bash
 git diff --name-only main | grep '\.js$' > changed-files.txt
 codeql database analyze codeql-db \
@@ -148,6 +161,7 @@ codeql database analyze codeql-db \
 ### Custom Queries
 
 Run specific security checks:
+
 ```bash
 # Only check for NoSQL injection
 codeql database analyze codeql-db \
@@ -172,6 +186,7 @@ brew info codeql
 Normal for first run (2-3 min). Subsequent runs are cached.
 
 To speed up:
+
 ```bash
 # Use parallel processing
 codeql database analyze codeql-db \

@@ -114,6 +114,7 @@ Automatic response caching is enabled for:
 - `GET /api/v1/health` (10s TTL)
 
 Caching activates automatically when Redis is available. The API supports both:
+
 - Full connection URL: `REDIS_URL`
 - Component-based: `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`
 
@@ -124,23 +125,28 @@ See `middleware/cache.js` for implementation.
 The API implements multiple security layers:
 
 ### CSRF Protection
+
 - **Double-submit cookie pattern** using `csrf-csrf`
 - Automatic protection for POST/PUT/PATCH/DELETE requests
 - Secure, httpOnly cookies
 
 ### Host Header Validation
+
 - Password reset URLs use trusted `APP_BASE_URL`
 - Prevents host header injection attacks
 
 ### Rate Limiting
+
 - **Global**: 100 requests per 10 minutes
 - **Auth routes**: 20 requests per 15 minutes (login, register, password reset)
 
 ### Bot & Scanner Protection
+
 - Blocks common scanner user-agents (Nikto, sqlmap, etc.)
 - Blocks suspicious paths (wp-admin, phpmyadmin, .env, etc.)
 
 ### Security Headers & Sanitization
+
 - **Helmet**: Secure HTTP headers
 - **XSS-clean**: Cross-site scripting protection
 - **express-mongo-sanitize**: NoSQL injection prevention
@@ -151,6 +157,7 @@ The API implements multiple security layers:
 **For complete security documentation, see [SECURITY.md](SECURITY.md)**
 
 See middleware:
+
 - `middleware/rateLimiters.js`
 - `middleware/botBlocker.js`
 - `middleware/error.js`
@@ -180,6 +187,7 @@ docker compose up -d
 ```
 
 The stack includes:
+
 - **API**: Multi-stage Dockerfile with dev target, hot reload via nodemon
 - **MongoDB 6**: Persistent data in `mongo_data` volume
 - **Redis 7**: Persistent data in `redis_data` volume
@@ -190,16 +198,19 @@ The stack includes:
 The app auto-builds database URIs from components (see `config/db.js` and `utils/redisClient.js`):
 
 **MongoDB**:
+
 - `MONGODB_HOST`, `MONGODB_DB`, `MONGODB_USERNAME`, `MONGODB_PASSWORD`
 - Or override with: `MONGODB_URI`
 
 **Redis**:
-- `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`  
+
+- `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`
 - Or override with: `REDIS_URL`
 
 ### Docker Multi-Stage Builds
 
 The `Dockerfile` includes optimized targets:
+
 - **dev**: Development with nodemon, all dependencies
 - **staging**: PM2 cluster mode, production dependencies
 - **prod**: PM2 cluster mode, optimized for production
@@ -223,11 +234,13 @@ Kamal 2.0 handles zero-downtime deployments with **kamal-proxy** for SSL/routing
 ### Automatic Deployments
 
 **Staging (Automatic):**
+
 1. Push to `staging` branch (or merge `main` → `staging`)
 2. QA workflow runs (lint, test, audit)
 3. If QA passes → Auto-deploy to staging.kodekamper.app
 
 **Production (Manual):**
+
 - Go to GitHub Actions → Deploy (Staging/Production) → Run workflow
 - Select "production" environment
 - Manual approval required
@@ -235,22 +248,26 @@ Kamal 2.0 handles zero-downtime deployments with **kamal-proxy** for SSL/routing
 ### Configuration
 
 Kamal configs:
+
 - `config/deploy.yml` (production)
 - `config/deploy.staging.yml` (staging)
 
 Secrets:
+
 - `.kamal/secrets.production` (use examples as templates)
 - `.kamal/secrets.staging`
 
 ### Server Setup
 
 **Production** (`/srv/www/production/kodekamper/`):
+
 - MongoDB: localhost:27017
 - Redis: localhost:6379
 - SSL: kodekamper.app (kamal-proxy)
 
 **Staging** (`/srv/www/staging/kodekamper/`):
-- MongoDB: localhost:27018  
+
+- MongoDB: localhost:27018
 - Redis: localhost:6380
 - SSL: staging.kodekamper.app (kamal-proxy)
 
@@ -271,6 +288,7 @@ npm run test:ci
 ```
 
 **Test Coverage**:
+
 - `tests/auth.test.js` - Authentication & authorization (register, login, JWT)
 - `tests/bootcamps.test.js` - Bootcamp CRUD, pagination, filtering, geolocation
 - `tests/courses.test.js` - Course management, relationships
@@ -279,6 +297,7 @@ npm run test:ci
 - `tests/health.test.js` - Health endpoint monitoring
 
 **Test Infrastructure**:
+
 - Uses **mongodb-memory-server** for local testing (no MongoDB required)
 - GitHub Actions uses real MongoDB/Redis service containers
 - Mock geocoder to avoid external API calls
@@ -290,6 +309,7 @@ npm run test:ci
 Automated checks run on every PR and push to staging:
 
 #### Code Quality
+
 - ✅ **ESLint**: Code linting with security plugin
 - ✅ **Prettier**: Code formatting validation
 - ✅ **Jest**: Full test suite with coverage reports
@@ -297,6 +317,7 @@ Automated checks run on every PR and push to staging:
 - ✅ **Codecov**: Coverage tracking and reporting
 
 #### Security Scanning
+
 - ✅ **CodeQL**: Static analysis security testing (SAST)
 - ✅ **Gitleaks**: Secret scanning (API keys, tokens, passwords)
 
