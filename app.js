@@ -53,7 +53,7 @@ const { doubleCsrfProtection, generateToken: generateCsrfToken } = doubleCsrf({
 });
 
 // Apply CSRF protection middleware
-// This protects all POST/PUT/PATCH/DELETE requests from CSRF attacks  
+// This protects all POST/PUT/PATCH/DELETE requests from CSRF attacks
 // In test environment, the middleware is registered but acts as a pass-through
 app.use((req, res, next) => {
   if (process.env.NODE_ENV === 'test') {
@@ -90,7 +90,7 @@ app.use(
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self' https: 'unsafe-inline'"],
-      scriptSrc: ["'unsafe-inline'", "https://getbootstrap.com"],
+      scriptSrc: ["'unsafe-inline'", 'https://getbootstrap.com'],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
