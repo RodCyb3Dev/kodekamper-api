@@ -1,5 +1,9 @@
 # KodeKamper API
 
+[![QA](https://github.com/RodCyb3Dev/kodekamper-api/actions/workflows/qa.yml/badge.svg?branch=main)](https://github.com/RodCyb3Dev/kodekamper-api/actions/workflows/qa.yml)
+[![CodeQL](https://github.com/RodCyb3Dev/kodekamper-api/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/RodCyb3Dev/kodekamper-api/actions/workflows/codeql.yml)
+[![codecov](https://codecov.io/gh/RodCyb3Dev/kodekamper-api/branch/main/graph/badge.svg)](https://codecov.io/gh/RodCyb3Dev/kodekamper-api)
+
 > KodeKamper is an extensive REST API service provide for consumer to build their own frontend platform on demand.
 
 ### Demo
