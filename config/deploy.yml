@@ -28,7 +28,7 @@ proxy:
 
 registry:
   server: ghcr.io
-  username: RodCyb3Dev
+  username: rodcyb3dev
   password:
     - REGISTRY_PASSWORD
 
