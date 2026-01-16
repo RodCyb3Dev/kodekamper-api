@@ -14,13 +14,17 @@ servers:
 ssh:
   user: deploy
 
-volume_args:
-  - /home/deploy/kodekamper/production:/app/data
+volumes:
+  - /srv/www/production/kodekamper/uploads:/app/public/uploads
 
 proxy:
   ssl: true
   host: kodekamper.app
   app_port: 5000
+  healthcheck:
+    interval: 10
+    path: /api/v1/health
+    timeout: 5
 
 registry:
   server: ghcr.io
@@ -59,11 +63,6 @@ env:
 
 volumes:
   - /srv/www/production/kodekamper/uploads:/app/public/uploads
-
-healthcheck:
-  path: /api/v1/health
-  interval: 10
-  timeout: 5
 
 accessories:
   mongo:
