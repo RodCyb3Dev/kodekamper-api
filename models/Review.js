@@ -14,8 +14,8 @@ const ReviewSchema = new mongoose.Schema({
   rating: {
     type: Number,
     min: 1,
-    max: 5,
-    required: [true, 'Please add a rating between 1 and 5'],
+    max: 10,
+    required: [true, 'Please add a rating between 1 and 10'],
   },
   createdAt: {
     type: Date,
@@ -51,6 +51,11 @@ ReviewSchema.statics.getAverageRating = async function (bootcampId) {
   ]);
 
   try {
+    if (!obj.length) {
+      await this.model('Bootcamp').findByIdAndUpdate(bootcampId, { $unset: { averageRating: '' } });
+      return;
+    }
+
     await this.model('Bootcamp').findByIdAndUpdate(bootcampId, {
       averageRating: obj[0].averageRating,
     });

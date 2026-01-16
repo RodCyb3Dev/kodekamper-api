@@ -123,7 +123,8 @@ app.use(
   (req, res, next) => {
     // Ensure a CSRF token is generated and attached for safe methods (e.g., login page / token fetch)
     if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
-      generateCsrfToken(req, res, next);
+      generateCsrfToken(req, res);
+      return next();
     } else {
       next();
     }
