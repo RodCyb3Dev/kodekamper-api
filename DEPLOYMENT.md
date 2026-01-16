@@ -88,15 +88,15 @@ CSRF_SECRET=<random-secret>
 ```
 
 **Staging** uses similar variables but with:
-- `STAGING_SERVER_IP=YOUR_STAGING_SERVER_IP` (set this to your staging server IP)
+- `SERVER_IP=YOUR_STAGING_SERVER_IP` (set this to your staging server IP)
 - `APP_BASE_URL=https://staging.kodekamper.app`
 - Different database/Redis credentials
 
 **Production** requires:
-- `PRODUCTION_SERVER_IP=YOUR_PRODUCTION_SERVER_IP` (set this to your production server IP)
+- `SERVER_IP=YOUR_PRODUCTION_SERVER_IP` (set this to your production server IP)
 - `APP_BASE_URL=https://kodekamper.app`
 
-> **Note**: Server IPs MUST be set via environment variables (`PRODUCTION_SERVER_IP`, `STAGING_SERVER_IP`) in your `.kamal/secrets` files. Never commit actual IP addresses to version control.
+> **Note**: Server IP MUST be set via environment variables (`SERVER_IP`) in your `.kamal/secrets` files if you use different servers. Never commit actual IP addresses to version control.
 
 ### 4. GitHub Actions Secrets
 Add these to GitHub repository secrets (Settings → Secrets and variables → Actions):

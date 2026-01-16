@@ -53,6 +53,43 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Create Kamal secrets file
+        run: |
+          mkdir -p .kamal
+          cat > .kamal/secrets.${{ steps.dest.outputs.destination }} << 'SECRETS_EOF'
+          REGISTRY_USERNAME=${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD=${{ secrets.REGISTRY_PASSWORD }}
+          SERVER_IP=${{ secrets.SERVER_IP }}
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          MONGODB_HOST=${{ secrets.MONGODB_HOST }}
+          MONGODB_DB=${{ secrets.MONGODB_DB }}
+          MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}
+          MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
+          MONGODB_PORT=${{ secrets.MONGODB_PORT }}
+          REDIS_URL=${{ secrets.REDIS_URL }}
+          REDIS_HOST=${{ secrets.REDIS_HOST }}
+          REDIS_PORT=${{ secrets.REDIS_PORT }}
+          REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_EXPIRE=${{ secrets.JWT_EXPIRE }}
+          JWT_COOKIE_EXPIRE=${{ secrets.JWT_COOKIE_EXPIRE }}
+          CSRF_SECRET=${{ secrets.CSRF_SECRET }}
+          APP_BASE_URL=${{ secrets.APP_BASE_URL }}
+          SMTP_HOST=${{ secrets.SMTP_HOST }}
+          SMTP_PORT=${{ secrets.SMTP_PORT }}
+          SMTP_EMAIL=${{ secrets.SMTP_EMAIL }}
+          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+          FROM_EMAIL=${{ secrets.FROM_EMAIL }}
+          FROM_NAME=${{ secrets.FROM_NAME }}
+          GEOCODER_PROVIDER=${{ secrets.GEOCODER_PROVIDER }}
+          GEOCODER_API_KEY=${{ secrets.GEOCODER_API_KEY }}
+          FILE_UPLOAD_PATH=${{ secrets.FILE_UPLOAD_PATH }}
+          MAX_FILE_UPLOAD=${{ secrets.MAX_FILE_UPLOAD }}
+          SECRETS_EOF
+
       - name: Deploy with Kamal
         env:
           REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
