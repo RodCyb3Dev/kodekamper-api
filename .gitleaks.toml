@@ -1,0 +1,17 @@
+title = "KodeKamper Gitleaks"
+
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+  '''config/config.env.env''',
+  '''.kamal/secrets.*.example''',
+  '''.env.example'''
+]
+
+regexes = [
+  '''^MONGODB_URI=$''',
+  '''^REDIS_URL=$''',
+  '''^JWT_SECRET=$'''
+]

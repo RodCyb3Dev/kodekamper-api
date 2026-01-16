@@ -1,0 +1,25 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true,
+    "jest": true
+  },
+  "extends": ["eslint:recommended", "plugin:security/recommended", "prettier"],
+  "plugins": ["security"],
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "rules": {
+    "no-console": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^(next|_)",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "no-useless-escape": "off",
+    "security/detect-unsafe-regex": "warn",
+    "security/detect-object-injection": "warn"
+  }
+}

@@ -1,0 +1,9 @@
+node_modules
+coverage
+public/uploads
+public/index.html
+_data
+config/deploy.yml
+config/deploy.staging.yml
+package-lock.json
+*.log
