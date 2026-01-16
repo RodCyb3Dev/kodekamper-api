@@ -94,6 +94,7 @@ jobs:
         env:
           REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
           SSH_USER: ${{ secrets.SSH_USER }}
           KAMAL_HOST: ${{ secrets.KAMAL_HOST }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
