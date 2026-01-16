@@ -96,6 +96,21 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
     fieldsToUpdate.email = email;
   }
 
+  // Extra safety: ensure the update document cannot contain MongoDB operators
+  const isSafeUpdateObject = (obj) => {
+    if (obj === null || typeof obj !== 'object') {
+      return false;
+    }
+    if (Object.getPrototypeOf(obj) !== Object.prototype) {
+      return false;
+    }
+    return Object.keys(obj).every((key) => !key.startsWith('$'));
+  };
+
+  if (!isSafeUpdateObject(fieldsToUpdate)) {
+    return next(new ErrorResponse('Invalid update payload', 400));
+  }
+
   const user = await User.findByIdAndUpdate(
     { _id: { $eq: req.user.id } },
     fieldsToUpdate,
