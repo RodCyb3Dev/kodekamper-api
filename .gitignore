@@ -28,3 +28,7 @@ kodekamper_specs.md
 .github/copilot-instructions.md
 .env
 .env.docker
+
+# CodeQL analysis files
+codeql-db/
+codeql-results.sarif

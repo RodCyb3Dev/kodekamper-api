@@ -7,6 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const { doubleCsrf } = require('csrf-csrf');
+const { conditionalCsrfProtection } = require('./middleware/csrfProtection');
 const { globalLimiter } = require('./middleware/rateLimiters');
 const botBlocker = require('./middleware/botBlocker');
 const hpp = require('hpp');
@@ -52,13 +53,9 @@ const { doubleCsrfProtection, generateToken: generateCsrfToken } = doubleCsrf({
     (req.query && (req.query._csrf || req.query._csrfToken)),
 });
 
-// Apply CSRF protection (skip in test environment)
-app.use((req, res, next) => {
-  if (process.env.NODE_ENV === 'test') {
-    return next();
-  }
-  doubleCsrfProtection(req, res, next);
-});
+// Apply CSRF protection middleware (wrapped for test environment support)
+// This protects all POST/PUT/PATCH/DELETE requests from CSRF attacks
+app.use(conditionalCsrfProtection(doubleCsrfProtection));
 
 // Endpoint for clients to obtain a CSRF token
 app.get('/csrf-token', (req, res) => {
