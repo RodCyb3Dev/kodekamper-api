@@ -1,5 +1,5 @@
 service: kodekamper-api-staging
-image: ghcr.io/rodcyb3dev/kodekamper-api
+image: rodcyb3dev/kodekamper-api
 
 builder:
   dockerfile: Dockerfile
@@ -34,6 +34,7 @@ env:
     NODE_ENV: staging
     PORT: 5000
   secret:
+    - STAGING_SERVER_IP
     - MONGODB_HOST
     - MONGODB_DB
     - MONGODB_USERNAME
@@ -65,7 +66,11 @@ accessories:
   mongo:
     image: mongo:6
     host: <%= ENV.fetch('STAGING_SERVER_IP', 'YOUR_STAGING_SERVER_IP') %>
-    port: 27018
+    port: "27018:27017"
+    env:
+      secret:
+        - MONGO_INITDB_ROOT_USERNAME
+        - MONGO_INITDB_ROOT_PASSWORD
     volumes:
       - /srv/www/staging/kodekamper/mongo:/data/db
   

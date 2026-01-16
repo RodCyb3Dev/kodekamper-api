@@ -44,10 +44,12 @@ CMD ["npm", "run", "dev"]
 
 # Production base stage
 FROM base AS production-base
-USER deploy
 COPY --from=prod-deps --chown=deploy:deploy /app/node_modules ./node_modules
 COPY --chown=deploy:deploy . .
+# Install PM2 globally as root
+USER root
 RUN npm install -g pm2@5.3.0
+USER deploy
 
 # Production stage
 FROM production-base AS prod
