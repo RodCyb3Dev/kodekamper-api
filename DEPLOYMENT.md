@@ -3,6 +3,7 @@
 ## Server Preparation Status ✅
 
 ### Infrastructure Ready
+
 - **Server**: YOUR_SERVER_IP
 - **User**: deploy (UID: 1001, GID: 1001)
 - **Docker**: v28.5.1 ✅
@@ -11,6 +12,7 @@
 - **Kamal Network**: Created ✅
 
 ### Directory Structure
+
 ```bash
 /home/deploy/kodekamper/
 ├── production/    # For production deployment
@@ -18,6 +20,7 @@
 ```
 
 ### Ports
+
 - **HTTP**: 80 (kamal-proxy)
 - **HTTPS**: 443 (kamal-proxy with SSL)
 - **MongoDB Production**: 27017 (managed by Kamal)
@@ -28,12 +31,14 @@
 ## Pre-Deployment Checklist
 
 ### 1. GitHub Container Registry
+
 - [ ] GitHub Personal Access Token (PAT) created with `write:packages` permission
 - [ ] PAT added to `.kamal/secrets.production` as `REGISTRY_PASSWORD`
 - [ ] PAT added to `.kamal/secrets.staging` as `REGISTRY_PASSWORD`
 - [ ] Registry username matches `RodCyb3Dev` in both configs
 
 ### 2. Secrets Configuration
+
 - [x] `.kamal/secrets.production` file exists and is populated
 - [x] `.kamal/secrets.staging` file exists and is populated
 - [x] All required environment variables are set (see below)
@@ -41,6 +46,7 @@
 ### 3. Required Environment Variables
 
 **Production** (`.kamal/secrets.production`):
+
 ```bash
 # Registry
 REGISTRY_USERNAME=RodCyb3Dev
@@ -88,31 +94,36 @@ CSRF_SECRET=<random-secret>
 ```
 
 **Staging** uses similar variables but with:
+
 - `SERVER_IP=YOUR_STAGING_SERVER_IP` (set this to your staging server IP)
 - `APP_BASE_URL=https://staging.kodekamper.app`
 - Different database/Redis credentials
 
 **Production** requires:
+
 - `SERVER_IP=YOUR_PRODUCTION_SERVER_IP` (set this to your production server IP)
 - `APP_BASE_URL=https://kodekamper.app`
 
 > **Note**: Server IP MUST be set via environment variables (`SERVER_IP`) in your `.kamal/secrets` files if you use different servers. Never commit actual IP addresses to version control.
 
 ### 4. GitHub Actions Secrets
+
 Add these to GitHub repository secrets (Settings → Secrets and variables → Actions):
 
 **Required:**
+
 - `REGISTRY_PASSWORD` - GitHub PAT for container registry
 - `SSH_PRIVATE_KEY` - SSH key for deploy@YOUR_SERVER_IP
 - `JWT_SECRET` - JWT signing secret
 - `CSRF_SECRET` - CSRF protection secret
 - `APP_BASE_URL` - Base URL (https://kodekamper.app or https://staging.kodekamper.app)
-- Database credentials (MONGODB_*)
-- Redis credentials (REDIS_*)
+- Database credentials (MONGODB\_\*)
+- Redis credentials (REDIS\_\*)
 - SMTP credentials for emails
 - Geocoder API key
 
 **Optional:**
+
 - `CODECOV_TOKEN` - For test coverage uploads
 - `GITLEAKS_LICENSE` - For Gitleaks secret scanning
 
@@ -121,11 +132,13 @@ Add these to GitHub repository secrets (Settings → Secrets and variables → A
 ### Git Branching Strategy
 
 **Branches:**
+
 - `main` - Main development branch
 - `staging` - Staging environment (auto-deploys when main is merged)
 - `production` - Production releases (manual deployment only)
 
 **Workflow:**
+
 1. Develop features on `main` branch
 2. Merge `main` → `staging` to auto-deploy to staging.kodekamper.app
 3. After testing on staging, manually deploy to production via GitHub Actions
@@ -133,11 +146,13 @@ Add these to GitHub repository secrets (Settings → Secrets and variables → A
 ### Automated CI/CD
 
 **Staging (Automatic):**
+
 - Trigger: Push to `staging` branch (or merge from `main`)
 - QA workflow runs first (lint, test, audit)
 - If QA passes → Auto-deploy to staging.kodekamper.app
 
 **Production (Manual Only):**
+
 - Trigger: Manual workflow dispatch in GitHub Actions
 - Go to: Actions → Deploy (Staging/Production) → Run workflow
 - Select "production" environment
@@ -146,11 +161,13 @@ Add these to GitHub repository secrets (Settings → Secrets and variables → A
 ### First-Time Setup
 
 1. **Install Kamal locally** (if not already installed):
+
 ```bash
 gem install kamal
 ```
 
 2. **Verify Kamal configuration**:
+
 ```bash
 # Check production config
 kamal config
@@ -160,6 +177,7 @@ kamal config -d staging
 ```
 
 3. **Setup accessories** (MongoDB & Redis):
+
 ```bash
 # Production
 kamal accessory boot all
@@ -169,6 +187,7 @@ kamal accessory boot all -d staging
 ```
 
 4. **First deployment**:
+
 ```bash
 # Production (from main branch)
 kamal deploy
@@ -180,11 +199,13 @@ kamal deploy -d staging
 ### Automated CI/CD
 
 **Staging (Automatic):**
+
 - Trigger: Push to `staging` branch (or merge from `main`)
 - QA workflow runs first (lint, test, audit)
 - If QA passes → Auto-deploy to staging.kodekamper.app
 
 **Production (Manual Only):**
+
 - Trigger: Manual workflow dispatch in GitHub Actions
 - Go to: Actions → Deploy (Staging/Production) → Run workflow
 - Select "production" environment
@@ -207,6 +228,7 @@ kamal deploy -d staging
 ## Useful Commands
 
 ### View Logs
+
 ```bash
 # Production
 kamal app logs -f
@@ -216,6 +238,7 @@ kamal app logs -f -d staging
 ```
 
 ### Check Status
+
 ```bash
 # Production
 kamal details
@@ -225,6 +248,7 @@ kamal details -d staging
 ```
 
 ### Restart App
+
 ```bash
 # Production
 kamal app restart
@@ -234,6 +258,7 @@ kamal app restart -d staging
 ```
 
 ### Database Management
+
 ```bash
 # View MongoDB logs
 kamal accessory logs mongodb -f
@@ -249,11 +274,13 @@ kamal accessory restart redis
 ```
 
 ### SSH into Server
+
 ```bash
 ssh deploy@YOUR_SERVER_IP
 ```
 
 ### View Running Containers
+
 ```bash
 ssh deploy@YOUR_SERVER_IP "docker ps"
 ```
@@ -271,6 +298,7 @@ curl https://staging.kodekamper.app/api/v1/health
 ```
 
 Expected response:
+
 ```json
 {
   "success": true,
@@ -286,6 +314,7 @@ Expected response:
 ## Troubleshooting
 
 ### Container Won't Start
+
 ```bash
 # Check container logs
 kamal app logs
@@ -299,6 +328,7 @@ kamal deploy
 ```
 
 ### MongoDB Connection Issues
+
 ```bash
 # Check MongoDB status
 kamal accessory logs mongodb
@@ -311,6 +341,7 @@ ssh deploy@YOUR_SERVER_IP "docker ps | grep mongo"
 ```
 
 ### Redis Connection Issues
+
 ```bash
 # Check Redis status
 kamal accessory logs redis
@@ -320,6 +351,7 @@ kamal accessory restart redis
 ```
 
 ### SSL Certificate Issues
+
 ```bash
 # Check kamal-proxy logs
 ssh deploy@YOUR_SERVER_IP "docker logs kamal-proxy --tail 100"
@@ -328,6 +360,7 @@ ssh deploy@YOUR_SERVER_IP "docker logs kamal-proxy --tail 100"
 ```
 
 ### Image Pull Errors
+
 ```bash
 # Login to GitHub Container Registry on server
 ssh deploy@YOUR_SERVER_IP
@@ -349,6 +382,7 @@ kamal rollback <previous-version>
 ## Server Maintenance
 
 ### Update Docker Images
+
 ```bash
 # Pull latest image
 kamal app boot
@@ -358,11 +392,13 @@ kamal deploy --skip-push=false
 ```
 
 ### Clean Up Old Images
+
 ```bash
 ssh deploy@YOUR_SERVER_IP "docker system prune -a -f"
 ```
 
 ### Monitor Resources
+
 ```bash
 ssh deploy@YOUR_SERVER_IP "docker stats"
 ```
@@ -378,6 +414,7 @@ ssh deploy@YOUR_SERVER_IP "docker stats"
 ## Next Steps
 
 1. **Create staging and production branches:**
+
 ```bash
 # Create staging branch from main
 git checkout -b staging
@@ -392,6 +429,7 @@ git checkout main
 ```
 
 2. **Commit and push configuration changes:**
+
 ```bash
 git add config/deploy.yml config/deploy.staging.yml DEPLOYMENT.md .github/workflows/deploy.yml
 git commit -m "chore: update deployment configs and branching strategy"
@@ -399,6 +437,7 @@ git push origin main
 ```
 
 3. **Deploy to staging (automatic):**
+
 ```bash
 # Merge main into staging
 git checkout staging
@@ -408,6 +447,7 @@ git push origin staging
 ```
 
 4. **Run QA tests locally before pushing:**
+
 ```bash
 npm test
 npm run lint

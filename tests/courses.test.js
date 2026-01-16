@@ -31,8 +31,7 @@ describe('Courses API', () => {
     // Create a test bootcamp
     const bootcamp = await Bootcamp.create({
       name: 'Test Bootcamp for Courses',
-      description:
-        'Test bootcamp description that is long enough to pass validation requirements',
+      description: 'Test bootcamp description that is long enough to pass validation requirements',
       website: 'https://testbootcamp.com',
       phone: '(555) 555-5555',
       email: 'contact@testbootcamp.com',

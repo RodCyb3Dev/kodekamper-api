@@ -87,6 +87,12 @@ logging:
     max-size: "10m"
     max-file: "5"
 
+# How long kamal-proxy waits for the new target to become healthy
+deploy_timeout: 120
+
+# How long to wait for old containers to drain requests
+drain_timeout: 60
+
 # Set boot timeout for slow-starting applications
 boot:
   limit: 60  # seconds

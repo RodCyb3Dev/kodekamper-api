@@ -83,8 +83,10 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
   const { name, email } = req.body;
 
   // Ensure update values are simple literals to avoid NoSQL injection
-  if ((name !== undefined && typeof name !== 'string') ||
-      (email !== undefined && typeof email !== 'string')) {
+  if (
+    (name !== undefined && typeof name !== 'string') ||
+    (email !== undefined && typeof email !== 'string')
+  ) {
     return next(new ErrorResponse('Invalid name or email', 400));
   }
 
@@ -111,14 +113,10 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Invalid update payload', 400));
   }
 
-  const user = await User.findByIdAndUpdate(
-    { _id: { $eq: req.user.id } },
-    fieldsToUpdate,
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
+  const user = await User.findByIdAndUpdate({ _id: { $eq: req.user.id } }, fieldsToUpdate, {
+    new: true,
+    runValidators: true,
+  });
 
   res.status(200).json({
     success: true,

@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - staging
+      - main
 
 jobs:
   qa:
@@ -44,11 +45,10 @@ jobs:
       REDIS_PORT: 6379
       REDIS_USERNAME: ''
       REDIS_PASSWORD: ''
-      JWT_SECRET: test-jwt-secret-key-for-github-actions
       JWT_EXPIRE: 30d
-      JWT_COOKIE_EXPIRE: 30      CSRF_SECRET: test-csrf-secret-github-actions
-      APP_BASE_URL: http://localhost:5000      GEOCODER_PROVIDER: mapquest
-      GEOCODER_API_KEY: test-key
+      JWT_COOKIE_EXPIRE: 30
+      APP_BASE_URL: http://localhost:5000
+      GEOCODER_PROVIDER: mapquest
       FILE_UPLOAD_PATH: ./public/uploads
       MAX_FILE_UPLOAD: 1000000
 
@@ -64,6 +64,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Generate test secrets
+        run: |
+          echo "JWT_SECRET=ci-test-$(openssl rand -hex 16)" >> "$GITHUB_ENV"
+          echo "CSRF_SECRET=ci-test-$(openssl rand -hex 16)" >> "$GITHUB_ENV"
+          echo "GEOCODER_API_KEY=ci-test-key" >> "$GITHUB_ENV"
 
       - name: Lint
         run: npm run lint

@@ -1,12 +1,14 @@
 name: Deploy (Staging/Production)
 
 on:
+  release:
+    types: [published]
   workflow_run:
     workflows: ['QA']
     types:
       - completed
     branches:
-      - staging  # Auto-deploy to staging only
+      - staging # Auto-deploy to staging only
   workflow_dispatch:
     inputs:
       environment:
@@ -17,14 +19,18 @@ on:
           - staging
           - production
 
+concurrency:
+  group: deploy-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  deploy:
-    name: Deploy to ${{ inputs.environment || 'staging' }}
+  deploy_staging:
+    name: Deploy to staging
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || 'staging' }}
     if: |
-      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging') ||
       (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'staging')
+    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,12 +39,7 @@ jobs:
 
       - name: Resolve destination
         id: dest
-        run: |
-          if [ -n "${{ inputs.environment }}" ]; then
-            echo "destination=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "destination=staging" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "destination=staging" >> "$GITHUB_OUTPUT"
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -52,6 +53,18 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          cat > ~/.ssh/config << EOF
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile=/dev/null
+            LogLevel ERROR
+          EOF
+          chmod 600 ~/.ssh/config
 
       - name: Create Kamal secrets file
         run: |
@@ -91,6 +104,8 @@ jobs:
           SECRETS_EOF
 
       - name: Deploy with Kamal
+        id: deploy
+        continue-on-error: true
         env:
           REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
@@ -125,4 +140,129 @@ jobs:
           FILE_UPLOAD_PATH: ${{ secrets.FILE_UPLOAD_PATH }}
           MAX_FILE_UPLOAD: ${{ secrets.MAX_FILE_UPLOAD }}
         run: |
-          kamal deploy -d "${{ steps.dest.outputs.destination }}"
+          kamal deploy -d "${{ steps.dest.outputs.destination }}" --verbose
+
+      - name: Debug (on failure)
+        if: steps.deploy.outcome == 'failure'
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          KAMAL_HOST: ${{ secrets.KAMAL_HOST }}
+        run: |
+          echo "--- kamal details ---"
+          kamal details -d "${{ steps.dest.outputs.destination }}" --verbose || true
+          echo "--- app logs (last 5m) ---"
+          kamal app logs -d "${{ steps.dest.outputs.destination }}" --since 5m --verbose || true
+          echo "--- proxy logs (last 200 lines) ---"
+          kamal proxy logs -d "${{ steps.dest.outputs.destination }}" --lines 200 --verbose || true
+          exit 1
+
+  deploy_production:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'release' && github.event.release.target_commitish == 'main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.sha }}
+
+      - name: Resolve destination
+        id: dest
+        run: echo "destination=production" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Install Kamal
+        run: gem install kamal -v 2.0.0
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          cat > ~/.ssh/config << EOF
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile=/dev/null
+            LogLevel ERROR
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Create Kamal secrets file
+        run: |
+          mkdir -p .kamal
+          cat > .kamal/secrets.${{ steps.dest.outputs.destination }} << 'SECRETS_EOF'
+          REGISTRY_USERNAME=${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD=${{ secrets.REGISTRY_PASSWORD }}
+          SERVER_IP=${{ secrets.SERVER_IP }}
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          MONGODB_HOST=${{ secrets.MONGODB_HOST }}
+          MONGODB_DB=${{ secrets.MONGODB_DB }}
+          MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}
+          MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
+          MONGODB_PORT=${{ secrets.MONGODB_PORT }}
+          REDIS_URL=${{ secrets.REDIS_URL }}
+          REDIS_HOST=${{ secrets.REDIS_HOST }}
+          REDIS_PORT=${{ secrets.REDIS_PORT }}
+          REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_EXPIRE=${{ secrets.JWT_EXPIRE }}
+          JWT_COOKIE_EXPIRE=${{ secrets.JWT_COOKIE_EXPIRE }}
+          CSRF_SECRET=${{ secrets.CSRF_SECRET }}
+          APP_BASE_URL=${{ secrets.APP_BASE_URL }}
+          SMTP_HOST=${{ secrets.SMTP_HOST }}
+          SMTP_PORT=${{ secrets.SMTP_PORT }}
+          SMTP_EMAIL=${{ secrets.SMTP_EMAIL }}
+          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+          FROM_EMAIL=${{ secrets.FROM_EMAIL }}
+          FROM_NAME=${{ secrets.FROM_NAME }}
+          GEOCODER_PROVIDER=${{ secrets.GEOCODER_PROVIDER }}
+          GEOCODER_API_KEY=${{ secrets.GEOCODER_API_KEY }}
+          FILE_UPLOAD_PATH=${{ secrets.FILE_UPLOAD_PATH }}
+          MAX_FILE_UPLOAD=${{ secrets.MAX_FILE_UPLOAD }}
+          SECRETS_EOF
+
+      - name: Deploy with Kamal
+        id: deploy
+        continue-on-error: true
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          KAMAL_HOST: ${{ secrets.KAMAL_HOST }}
+        run: |
+          kamal deploy -d "${{ steps.dest.outputs.destination }}" --verbose
+
+      - name: Debug (on failure)
+        if: steps.deploy.outcome == 'failure'
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          KAMAL_HOST: ${{ secrets.KAMAL_HOST }}
+        run: |
+          echo "--- kamal details ---"
+          kamal details -d "${{ steps.dest.outputs.destination }}" --verbose || true
+          echo "--- app logs (last 10m) ---"
+          kamal app logs -d "${{ steps.dest.outputs.destination }}" --since 10m --verbose || true
+          echo "--- proxy logs (last 300 lines) ---"
+          kamal proxy logs -d "${{ steps.dest.outputs.destination }}" --lines 300 --verbose || true
+          exit 1
