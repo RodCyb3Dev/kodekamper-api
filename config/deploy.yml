@@ -1,5 +1,5 @@
 service: kodekamper-api
-image: ghcr.io/rodcyb3dev/kodekamper-api
+image: rodcyb3dev/kodekamper-api
 
 builder:
   dockerfile: Dockerfile
@@ -14,17 +14,10 @@ servers:
 ssh:
   user: deploy
 
-volumes:
-  - /srv/www/production/kodekamper/uploads:/app/public/uploads
-
 proxy:
   ssl: true
   host: kodekamper.app
   app_port: 5000
-  healthcheck:
-    interval: 10
-    path: /api/v1/health
-    timeout: 5
 
 registry:
   server: ghcr.io
@@ -69,6 +62,10 @@ accessories:
     image: mongo:6
     host: <%= ENV.fetch('PRODUCTION_SERVER_IP', 'YOUR_PRODUCTION_SERVER_IP') %>
     port: 27017
+    env:
+      secret:
+        - MONGO_INITDB_ROOT_USERNAME
+        - MONGO_INITDB_ROOT_PASSWORD
     volumes:
       - /srv/www/production/kodekamper/mongo:/data/db
   redis:
