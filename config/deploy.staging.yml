@@ -9,7 +9,7 @@ builder:
 
 servers:
   web:
-    - <%= ENV.fetch('STAGING_SERVER_IP', 'YOUR_STAGING_SERVER_IP') %>
+    - <%= ENV.fetch('SERVER_IP', 'YOUR_SERVER_IP') %>
 
 ssh:
   user: deploy
@@ -34,7 +34,6 @@ env:
     NODE_ENV: staging
     PORT: 5000
   secret:
-    - STAGING_SERVER_IP
     - MONGODB_HOST
     - MONGODB_DB
     - MONGODB_USERNAME
@@ -65,7 +64,7 @@ volumes:
 accessories:
   mongo:
     image: mongo:6
-    host: <%= ENV.fetch('STAGING_SERVER_IP', 'YOUR_STAGING_SERVER_IP') %>
+    host: <%= ENV.fetch('SERVER_IP', 'YOUR_SERVER_IP') %>
     port: "27018:27017"
     env:
       secret:
@@ -76,7 +75,7 @@ accessories:
   
   redis:
     image: redis:7-alpine
-    host: <%= ENV.fetch('STAGING_SERVER_IP', 'YOUR_STAGING_SERVER_IP') %>
+    host: <%= ENV.fetch('SERVER_IP', 'YOUR_SERVER_IP') %>
     port: 6380
     volumes:
       - /srv/www/staging/kodekamper/redis:/data
