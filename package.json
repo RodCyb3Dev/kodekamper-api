@@ -13,7 +13,11 @@
     "format:check": "prettier --check .",
     "test": "NODE_ENV=test jest --runInBand",
     "test:ci": "NODE_ENV=test jest --coverage --runInBand",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "codeql:create-db": "rm -rf codeql-db && codeql database create codeql-db --language=javascript --source-root=.",
+    "codeql:analyze": "codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif -- ~/codeql-queries/javascript/ql/src/codeql-suites/javascript-security-and-quality.qls",
+    "codeql:scan": "npm run codeql:create-db && npm run codeql:analyze && echo '\n✅ CodeQL scan complete! View results in codeql-results.sarif'",
+    "codeql:clean": "rm -rf codeql-db codeql-results.sarif"
   },
   "keywords": [
     "REST API",
