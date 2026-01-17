@@ -8,7 +8,13 @@ const buildRedisUrl = () => {
     return process.env.REDIS_URL;
   }
 
-  const host = process.env.REDIS_HOST || '127.0.0.1';
+  // If Redis isn't explicitly configured, treat it as disabled.
+  // This avoids long connection hangs (e.g., in tests where no Redis is running).
+  if (!process.env.REDIS_HOST) {
+    return null;
+  }
+
+  const host = process.env.REDIS_HOST;
   const port = process.env.REDIS_PORT || '6379';
   const user = process.env.REDIS_USERNAME;
   const pass = process.env.REDIS_PASSWORD;
@@ -45,6 +51,21 @@ const getRedisClient = async () => {
   isConnecting = false;
 
   return redisClient;
+};
+
+getRedisClient.close = async () => {
+  if (!redisClient) {
+    return;
+  }
+
+  try {
+    await redisClient.quit();
+  } catch (_err) {
+    // Ignore
+  } finally {
+    redisClient = undefined;
+    isConnecting = false;
+  }
 };
 
 module.exports = getRedisClient;

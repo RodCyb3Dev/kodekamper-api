@@ -30,3 +30,7 @@ kodekamper_specs.md
 # CodeQL analysis files
 codeql-db/
 codeql-results.sarif
+
+# Test coverage
+coverage/
+.nyc_output/

@@ -113,7 +113,7 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Invalid update payload', 400));
   }
 
-  const user = await User.findByIdAndUpdate({ _id: { $eq: req.user.id } }, fieldsToUpdate, {
+  const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
     new: true,
     runValidators: true,
   });
