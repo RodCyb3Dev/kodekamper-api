@@ -19,7 +19,16 @@ if [ -f "$SECRETS_FILE" ]; then
   source "$SECRETS_FILE"
   set +a
 else
-  echo "Warning: $SECRETS_FILE not found"
+  echo "Error: $SECRETS_FILE not found" >&2
+  echo "Create it (gitignored) or pass -d <destination> to use .kamal/secrets.<destination>." >&2
+  exit 1
+fi
+
+# Fail fast if required vars aren't present. These are used during ERB evaluation in deploy configs.
+if [[ -z "${SERVER_IP:-}" ]]; then
+  echo "Error: SERVER_IP is not set after sourcing $SECRETS_FILE" >&2
+  echo "Fix: add SERVER_IP=<your_server_ip> to $SECRETS_FILE, or export SERVER_IP in your shell." >&2
+  exit 1
 fi
 
 # Run kamal with all arguments passed through

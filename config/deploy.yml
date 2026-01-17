@@ -9,7 +9,7 @@ builder:
 
 servers:
   web:
-    - <%= ENV.fetch('SERVER_IP', 'ADD_YOUR_SERVER_IP') %>
+    - <%= ENV.fetch('SERVER_IP') %>
 
 ssh:
   user: deploy
@@ -64,7 +64,7 @@ volumes:
 accessories:
   mongo:
     image: mongo:6
-    host: <%= ENV.fetch('SERVER_IP', 'YOUR_SERVER_IP') %>
+    host: <%= ENV.fetch('SERVER_IP') %>
     port: 27017
     env:
       secret:
@@ -74,7 +74,7 @@ accessories:
       - /srv/www/production/kodekamper/mongo:/data/db
   redis:
     image: redis:7-alpine
-    host: <%= ENV.fetch('SERVER_IP', 'YOUR_SERVER_IP') %>
+    host: <%= ENV.fetch('SERVER_IP') %>
     port: 6379
     volumes:
       - /srv/www/production/kodekamper/redis:/data

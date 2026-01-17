@@ -1,3 +1,7 @@
 {
-  "codeQL.createQuery.qlPackLocation": "~/kodekamper-api"
+  "codeQL.createQuery.qlPackLocation": "~/kodekamper-api",
+  "files.associations": {
+    ".kamal/secrets": "dotenv",
+    ".kamal/secrets.*": "dotenv"
+  }
 }
