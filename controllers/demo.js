@@ -65,6 +65,187 @@ exports.resetSession = asyncHandler(async (req, res, next) => {
 });
 
 /**
+ * Seed demo data with sample bootcamps, courses, and reviews
+ * @route   POST /api/v1/demo/seed
+ * @access  Public
+ */
+exports.seedDemoData = asyncHandler(async (req, res, next) => {
+  const sessionId = req.cookies.demo_sid;
+
+  if (!sessionId) {
+    return next(new ErrorResponse('Demo session required', 400));
+  }
+
+  const expiresAt = new Date(Date.now() + DEMO_SESSION_TTL_MS);
+
+  // Sample bootcamps data
+  const bootcampsData = [
+    {
+      sessionId,
+      name: 'DevWorks Bootcamp',
+      description: 'Full stack web development bootcamp focused on modern JavaScript, React, Node.js, and MongoDB. Perfect for beginners looking to start a career in web development.',
+      website: 'https://devworks.com',
+      email: 'info@devworks.com',
+      address: '233 Bay State Rd Boston MA 02215',
+      careers: ['Web Development', 'UI/UX', 'Business'],
+      housing: true,
+      jobAssistance: true,
+      jobGuarantee: false,
+      acceptGi: true,
+      expiresAt,
+    },
+    {
+      sessionId,
+      name: 'ModernTech Bootcamp',
+      description: 'Intensive 12-week program covering front-end and back-end technologies. Industry-led curriculum with real-world projects and job placement support.',
+      website: 'https://moderntech.io',
+      email: 'contact@moderntech.io',
+      address: '220 Pawtucket St, Lowell, MA 01854',
+      careers: ['Web Development', 'Mobile Development', 'Data Science'],
+      housing: false,
+      jobAssistance: true,
+      jobGuarantee: true,
+      acceptGi: false,
+      expiresAt,
+    },
+    {
+      sessionId,
+      name: 'Codemasters Academy',
+      description: 'Learn to code from industry experts. Small class sizes, hands-on projects, and lifetime career support. Specializing in full-stack JavaScript and Python.',
+      website: 'https://codemasters.dev',
+      email: 'hello@codemasters.dev',
+      address: '85 South Prospect Street Burlington VT 05405',
+      careers: ['Web Development', 'Other', 'UI/UX'],
+      housing: true,
+      jobAssistance: true,
+      jobGuarantee: false,
+      acceptGi: true,
+      expiresAt,
+    },
+  ];
+
+  // Create bootcamps
+  const bootcamps = await DemoBootcamp.insertMany(bootcampsData);
+
+  // Sample courses data
+  const coursesData = [
+    // DevWorks courses
+    {
+      sessionId,
+      bootcamp: bootcamps[0]._id,
+      title: 'Front End Web Development',
+      description: 'Master HTML, CSS, JavaScript, and React to build modern, responsive web applications.',
+      weeks: 8,
+      tuition: 8000,
+      minimumSkill: 'beginner',
+      scholarshipsAvailable: true,
+      expiresAt,
+    },
+    {
+      sessionId,
+      bootcamp: bootcamps[0]._id,
+      title: 'Full Stack Web Development',
+      description: 'Complete full-stack program covering MongoDB, Express, React, and Node.js (MERN stack).',
+      weeks: 12,
+      tuition: 12000,
+      minimumSkill: 'intermediate',
+      scholarshipsAvailable: true,
+      expiresAt,
+    },
+    // ModernTech courses
+    {
+      sessionId,
+      bootcamp: bootcamps[1]._id,
+      title: 'Advanced JavaScript & TypeScript',
+      description: 'Deep dive into modern JavaScript ES6+, TypeScript, async programming, and design patterns.',
+      weeks: 6,
+      tuition: 9000,
+      minimumSkill: 'intermediate',
+      scholarshipsAvailable: false,
+      expiresAt,
+    },
+    {
+      sessionId,
+      bootcamp: bootcamps[1]._id,
+      title: 'Mobile Development with React Native',
+      description: 'Build cross-platform mobile apps for iOS and Android using React Native and Expo.',
+      weeks: 10,
+      tuition: 11000,
+      minimumSkill: 'intermediate',
+      scholarshipsAvailable: true,
+      expiresAt,
+    },
+    // Codemasters courses
+    {
+      sessionId,
+      bootcamp: bootcamps[2]._id,
+      title: 'Python for Data Science',
+      description: 'Learn Python fundamentals, data analysis with Pandas, visualization, and machine learning basics.',
+      weeks: 10,
+      tuition: 10000,
+      minimumSkill: 'beginner',
+      scholarshipsAvailable: true,
+      expiresAt,
+    },
+  ];
+
+  const courses = await DemoCourse.insertMany(coursesData);
+
+  // Sample reviews data
+  const reviewsData = [
+    // DevWorks reviews
+    {
+      sessionId,
+      bootcamp: bootcamps[0]._id,
+      title: 'Best decision I ever made!',
+      text: 'The instructors were amazing and the curriculum was well-structured. I landed my first developer job 2 weeks after graduating. Highly recommend!',
+      rating: 9,
+      expiresAt,
+    },
+    {
+      sessionId,
+      bootcamp: bootcamps[0]._id,
+      title: 'Great learning experience',
+      text: 'Solid program with hands-on projects. The career support team was very helpful. Would give 10/10 but the housing options were limited.',
+      rating: 8,
+      expiresAt,
+    },
+    // ModernTech reviews
+    {
+      sessionId,
+      bootcamp: bootcamps[1]._id,
+      title: 'Intense but worth it',
+      text: 'Very challenging program but you learn a ton. The job guarantee gave me peace of mind. Now working as a full-stack developer!',
+      rating: 10,
+      expiresAt,
+    },
+    // Codemasters reviews
+    {
+      sessionId,
+      bootcamp: bootcamps[2]._id,
+      title: 'Excellent instructors',
+      text: 'Small class sizes meant lots of one-on-one attention. The lifetime career support is a huge plus. Definitely worth the investment.',
+      rating: 9,
+      expiresAt,
+    },
+  ];
+
+  const reviews = await DemoReview.insertMany(reviewsData);
+
+  res.status(201).json({
+    success: true,
+    data: {
+      message: 'Sample data created successfully',
+      counts: {
+        bootcamps: bootcamps.length,
+        courses: courses.length,
+        reviews: reviews.length,
+      },
+    },
+  });
+});
+
+/**
  * Get all demo bootcamps for session
  * @route   GET /api/v1/demo/bootcamps
  * @access  Public

@@ -212,6 +212,153 @@
             color: #666;
             font-size: 14px;
         }
+        .stats-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .request-inspector {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .inspector-header {
+            background: #2d2d2d;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .inspector-header:hover {
+            background: #3d3d3d;
+        }
+        .inspector-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .inspector-toggle {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        .inspector-body {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .inspector-body.collapsed {
+            display: none;
+        }
+        .request-entry {
+            margin-bottom: 20px;
+            border-left: 3px solid #667eea;
+            padding-left: 12px;
+        }
+        .request-method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 11px;
+        }
+        .method-GET { background: #28a745; color: white; }
+        .method-POST { background: #007bff; color: white; }
+        .method-PUT { background: #ffc107; color: #333; }
+        .method-DELETE { background: #dc3545; color: white; }
+        .request-url {
+            color: #9cdcfe;
+            word-break: break-all;
+        }
+        .response-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin: 8px 0;
+            font-size: 11px;
+        }
+        .status-2xx { background: #28a745; color: white; }
+        .status-4xx { background: #ffc107; color: #333; }
+        .status-5xx { background: #dc3545; color: white; }
+        .json-preview {
+            background: #252525;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .activity-history {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .activity-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+        .activity-item {
+            padding: 10px;
+            background: white;
+            border-left: 3px solid #667eea;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .activity-time {
+            font-size: 11px;
+            color: #999;
+        }
+        .undo-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+        button.info {
+            background: #17a2b8;
+        }
+        button.info:hover {
+            background: #138496;
+        }
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -243,6 +390,26 @@
 
         <div id="alert-container"></div>
 
+        <!-- Statistics Dashboard -->
+        <div class="stats-dashboard">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-bootcamps">0</div>
+                <div class="stat-label">Bootcamps</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-courses">0</div>
+                <div class="stat-label">Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-reviews">0</div>
+                <div class="stat-label">Reviews</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-requests">0/30</div>
+                <div class="stat-label">API Requests</div>
+            </div>
+        </div>
+
         <div class="session-info">
             <strong>Session ID:</strong> <span id="session-id">Initializing...</span><br>
             <strong>Expires:</strong> <span id="session-expires">--</span>
@@ -250,8 +417,59 @@
 
         <div class="controls">
             <button onclick="initSession()">🔄 Refresh Session</button>
+            <button onclick="seedSampleData()" class="info">🌱 Load Sample Data</button>
             <button onclick="resetDemo()" class="danger">🗑️ Reset All Data</button>
-            <button onclick="loadAllData()" class="success">📥 Load Data</button>
+            <button onclick="loadAllData()" class="success">📥 Reload Data</button>
+            <button onclick="toggleInspector()" class="info">🔍 Toggle Inspector</button>
+        </div>
+
+        <!-- Activity History -->
+        <div class="activity-history">
+            <div class="activity-header">
+                <h3>📜 Recent Activity</h3>
+                <button onclick="clearHistory()" class="danger" style="padding: 4px 10px; font-size: 11px;">Clear</button>
+            </div>
+            <div id="activity-log">
+                <p style="color: #999; font-size: 13px; text-align: center;">No activity yet</p>
+            </div>
+        </div>
+
+        <!-- API Request Inspector -->
+        <div class="request-inspector">
+            <div class="inspector-header" onclick="toggleInspector()">
+                <div class="inspector-title">
+                    <span>🔍</span>
+                    <span>API Request Inspector</span>
+                </div>
+                <span class="inspector-toggle" id="inspector-toggle">Click to expand</span>
+            </div>
+            <div class="inspector-body collapsed" id="inspector-body">
+                <div id="requests-log">
+                    <p style="color: #999; text-align: center;">No requests yet. Start interacting with the API!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Examples Panel -->
+        <div class="section" id="code-examples-panel">
+            <h2 style="margin-bottom: 10px;">Code Examples</h2>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <button id="tab-curl" onclick="showCodeTab('curl')" class="info" style="padding: 6px 16px;">cURL</button>
+                <button id="tab-js" onclick="showCodeTab('js')" style="padding: 6px 16px;">JavaScript</button>
+                <button id="tab-python" onclick="showCodeTab('python')" style="padding: 6px 16px;">Python</button>
+            </div>
+            <div id="code-curl" class="code-example-block" style="display: block;">
+                <pre style="background: #23272e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto;"><code id="curl-code"># Perform an API request to see code example</code></pre>
+                <button onclick="copyCode('curl-code')" class="info" style="margin-top: 6px;">Copy</button>
+            </div>
+            <div id="code-js" class="code-example-block" style="display: none;">
+                <pre style="background: #23272e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto;"><code id="js-code">// Perform an API request to see code example</code></pre>
+                <button onclick="copyCode('js-code')" class="info" style="margin-top: 6px;">Copy</button>
+            </div>
+            <div id="code-python" class="code-example-block" style="display: none;">
+                <pre style="background: #23272e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto;"><code id="python-code"># Perform an API request to see code example</code></pre>
+                <button onclick="copyCode('python-code')" class="info" style="margin-top: 6px;">Copy</button>
+            </div>
         </div>
 
         <!-- Bootcamps Section -->
@@ -344,6 +562,8 @@
         const API_BASE = window.location.origin + '/api/v1/demo';
         let csrfToken = '';
         let sessionId = '';
+        let requestCount = 0;
+        let activityLog = [];
 
         // Utility: Show alert
         function showAlert(message, type = 'info') {
@@ -355,8 +575,164 @@
             setTimeout(() => alert.remove(), 5000);
         }
 
-        // Utility: Fetch with CSRF
+        // Log activity
+        function logActivity(action, details = '') {
+            const timestamp = new Date().toLocaleTimeString();
+            activityLog.unshift({ action, details, timestamp, id: Date.now() });
+            
+            // Keep only last 20 items
+            if (activityLog.length > 20) activityLog.pop();
+            
+            updateActivityDisplay();
+        }
+
+        // Update activity display
+        function updateActivityDisplay() {
+            const logContainer = document.getElementById('activity-log');
+            
+            if (activityLog.length === 0) {
+                logContainer.innerHTML = '<p style="color: #999; font-size: 13px; text-align: center;">No activity yet</p>';
+                return;
+            }
+
+            logContainer.innerHTML = activityLog.map(item => `
+                <div class="activity-item">
+                    <div>
+                        <strong>${item.action}</strong>
+                        ${item.details ? `<br><span style="color: #666; font-size: 12px;">${item.details}</span>` : ''}
+                    </div>
+                    <div class="activity-time">${item.timestamp}</div>
+                </div>
+            `).join('');
+        }
+
+        // Clear activity history
+        function clearHistory() {
+            activityLog = [];
+            updateActivityDisplay();
+            showAlert('Activity history cleared', 'info');
+        }
+
+        // Toggle API inspector
+        function toggleInspector() {
+            const body = document.getElementById('inspector-body');
+            const toggle = document.getElementById('inspector-toggle');
+            
+            body.classList.toggle('collapsed');
+            toggle.textContent = body.classList.contains('collapsed') 
+                ? 'Click to expand' 
+                : 'Click to collapse';
+        }
+
+        // Log request to inspector and update code examples
+        function logRequest(method, url, status, responseData, requestBody = null, duration = 0) {
+            requestCount++;
+            document.getElementById('stat-requests').textContent = `${requestCount}/30`;
+            
+            const log = document.getElementById('requests-log');
+            
+            // Clear placeholder if first request
+            if (requestCount === 1) {
+                log.innerHTML = '';
+            }
+
+            const statusClass = status >= 200 && status < 300 ? '2xx' : 
+                              status >= 400 && status < 500 ? '4xx' : '5xx';
+
+            const entry = document.createElement('div');
+            entry.className = 'request-entry';
+            entry.innerHTML = `
+                <div>
+                    <span class="request-method method-${method}">${method}</span>
+                    <span class="request-url">${url.replace(window.location.origin, '')}</span>
+                    <span style="color: #999; font-size: 11px; margin-left: 10px;">${duration}ms</span>
+                </div>
+                <div>
+                    <span class="response-status status-${statusClass}">${status} ${status === 200 ? 'OK' : status === 201 ? 'Created' : status === 204 ? 'No Content' : 'Error'}</span>
+                </div>
+                ${requestBody ? `<div style="margin-top: 8px;"><strong style="color: #ce9178;">Request Body:</strong><div class="json-preview">${JSON.stringify(requestBody, null, 2)}</div></div>` : ''}
+                <div style="margin-top: 8px;">
+                    <strong style="color: #4ec9b0;">Response:</strong>
+                    <div class="json-preview">${JSON.stringify(responseData, null, 2)}</div>
+                </div>
+            `;
+
+            log.insertBefore(entry, log.firstChild);
+
+            // Keep only last 10 requests
+            while (log.children.length > 10) {
+                log.removeChild(log.lastChild);
+            }
+            // Update code examples panel
+            updateCodeExamples(method, url, requestBody, csrfToken);
+        }
+
+        // Code Examples Panel logic
+        function showCodeTab(tab) {
+            document.getElementById('tab-curl').classList.remove('info');
+            document.getElementById('tab-js').classList.remove('info');
+            document.getElementById('tab-python').classList.remove('info');
+            document.getElementById('code-curl').style.display = 'none';
+            document.getElementById('code-js').style.display = 'none';
+            document.getElementById('code-python').style.display = 'none';
+            if (tab === 'curl') {
+                document.getElementById('tab-curl').classList.add('info');
+                document.getElementById('code-curl').style.display = 'block';
+            } else if (tab === 'js') {
+                document.getElementById('tab-js').classList.add('info');
+                document.getElementById('code-js').style.display = 'block';
+            } else {
+                document.getElementById('tab-python').classList.add('info');
+                document.getElementById('code-python').style.display = 'block';
+            }
+        }
+
+        function copyCode(id) {
+            const code = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(code);
+            showAlert('Copied to clipboard!', 'success');
+        }
+
+        function updateCodeExamples(method, url, body, csrf) {
+            // Only show for API requests (not /csrf-token)
+            if (url.includes('/csrf-token')) return;
+            let curl = `curl -X ${method} '${url}' \\\n  -H 'Content-Type: application/json'`;
+            let js = `fetch('${url}', {\n  method: '${method}',\n  headers: {\n    'Content-Type': 'application/json',`;
+            let python = `import requests\n\nurl = '${url}'\nheaders = {\n    'Content-Type': 'application/json',`;
+            if (csrf && method !== 'GET') {
+                curl += ` \\\n  -H 'x-csrf-token: ${csrf}'`;
+                js += `\n    'x-csrf-token': '${csrf}',`;
+                python += `\n    'x-csrf-token': '${csrf}',`;
+            }
+            curl += ` \\\n  --cookie 'demo_sid=...'`;
+            js += `\n  },\n  credentials: 'include',`;
+            python += `\n}\n\ns = requests.Session()\ns.cookies.set('demo_sid', '...')`;
+            if (body) {
+                const pretty = JSON.stringify(body, null, 2);
+                curl += ` \\\n  -d '${pretty.replace(/'/g, "'\\''")}'`;
+                js += `\n  body: JSON.stringify(${pretty}),`;
+                python += `\n\ndata = ${pretty}\nresponse = s.request('${method}', url, headers=headers, json=data)`;
+            } else {
+                js += `\n}`;
+                python += `\nresponse = s.request('${method}', url, headers=headers)`;
+            }
+            js += `)\n  .then(res => res.json())\n  .then(data => console.log(data));`;
+            python += `\nprint(response.json())`;
+            document.getElementById('curl-code').innerText = curl;
+            document.getElementById('js-code').innerText = js;
+            document.getElementById('python-code').innerText = python;
+        }
+
+        // Update statistics
+        function updateStats(bootcamps, courses, reviews) {
+            document.getElementById('stat-bootcamps').textContent = bootcamps || 0;
+            document.getElementById('stat-courses').textContent = courses || 0;
+            document.getElementById('stat-reviews').textContent = reviews || 0;
+        }
+
+        // Utility: Fetch with CSRF and logging
         async function fetchAPI(url, options = {}) {
+            const startTime = performance.now();
             const headers = {
                 'Content-Type': 'application/json',
                 ...options.headers,
@@ -366,19 +742,46 @@
                 headers['x-csrf-token'] = csrfToken;
             }
 
-            const response = await fetch(url, {
-                ...options,
-                headers,
-                credentials: 'same-origin',
-            });
+            const method = options.method || 'GET';
+            const requestBody = options.body ? JSON.parse(options.body) : null;
 
-            const data = await response.json();
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers,
+                    credentials: 'same-origin',
+                });
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Request failed');
+                const data = await response.json();
+                const duration = Math.round(performance.now() - startTime);
+
+                // Log to inspector
+                logRequest(method, url, response.status, data, requestBody, duration);
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                return data;
+            } catch (error) {
+                const duration = Math.round(performance.now() - startTime);
+                logRequest(method, url, 0, { error: error.message }, requestBody, duration);
+                throw error;
             }
+        }
 
-            return data;
+        // Seed sample data
+        async function seedSampleData() {
+            if (!confirm('This will add 3 sample bootcamps with courses and reviews. Continue?')) return;
+
+            try {
+                const data = await fetchAPI(`${API_BASE}/seed`, { method: 'POST' });
+                showAlert(`✅ Sample data created: ${data.data.counts.bootcamps} bootcamps, ${data.data.counts.courses} courses, ${data.data.counts.reviews} reviews`, 'success');
+                logActivity('Sample Data Loaded', `${data.data.counts.bootcamps} bootcamps, ${data.data.counts.courses} courses, ${data.data.counts.reviews} reviews`);
+                loadAllData();
+            } catch (error) {
+                showAlert('Failed to seed data: ' + error.message, 'error');
+            }
         }
 
         // Initialize session and CSRF token
@@ -409,6 +812,9 @@
             try {
                 await fetchAPI(`${API_BASE}/reset`, { method: 'DELETE' });
                 showAlert('Demo data reset successfully!', 'success');
+                logActivity('All Data Reset', 'All bootcamps, courses, and reviews deleted');
+                requestCount = 0;
+                document.getElementById('stat-requests').textContent = '0/30';
                 loadAllData();
             } catch (error) {
                 showAlert('Failed to reset: ' + error.message, 'error');
@@ -417,9 +823,14 @@
 
         // Load all data
         async function loadAllData() {
-            await loadBootcamps();
-            await loadCourses();
-            await loadReviews();
+            const results = await Promise.all([
+                loadBootcamps(),
+                loadCourses(),
+                loadReviews()
+            ]);
+            
+            // Update stats with actual counts
+            updateStats(results[0], results[1], results[2]);
         }
 
         // Bootcamps
@@ -436,7 +847,7 @@
 
                 if (data.data.length === 0) {
                     list.innerHTML = '<p style="color: #999;">No bootcamps yet. Create one above!</p>';
-                    return;
+                    return data.data.length;
                 }
 
                 data.data.forEach(bootcamp => {
@@ -460,8 +871,11 @@
                         select.appendChild(option);
                     });
                 });
+
+                return data.data.length;
             } catch (error) {
                 showAlert('Failed to load bootcamps: ' + error.message, 'error');
+                return 0;
             }
         }
 
@@ -516,6 +930,7 @@
                 });
 
                 showAlert('Bootcamp created!', 'success');
+                logActivity('Created Bootcamp', name);
                 document.getElementById('bootcamp-name').value = '';
                 document.getElementById('bootcamp-description').value = '';
                 document.getElementById('bootcamp-website').value = '';
@@ -532,6 +947,7 @@
             try {
                 await fetchAPI(`${API_BASE}/bootcamps/${id}`, { method: 'DELETE' });
                 showAlert('Bootcamp deleted!', 'success');
+                logActivity('Deleted Bootcamp', 'Including all associated courses and reviews');
                 loadAllData();
             } catch (error) {
                 showAlert('Failed to delete: ' + error.message, 'error');
@@ -548,7 +964,7 @@
 
                 if (data.data.length === 0) {
                     list.innerHTML = '<p style="color: #999;">No courses yet. Create one above!</p>';
-                    return;
+                    return data.data.length;
                 }
 
                 data.data.forEach(course => {
@@ -565,8 +981,11 @@
                     `;
                     list.appendChild(card);
                 });
+
+                return data.data.length;
             } catch (error) {
                 showAlert('Failed to load courses: ' + error.message, 'error');
+                return 0;
             }
         }
 
@@ -616,6 +1035,7 @@
                 });
 
                 showAlert('Course created!', 'success');
+                logActivity('Created Course', title);
                 document.getElementById('course-title').value = '';
                 document.getElementById('course-description').value = '';
                 document.getElementById('course-weeks').value = '';
@@ -632,6 +1052,7 @@
             try {
                 await fetchAPI(`${API_BASE}/courses/${id}`, { method: 'DELETE' });
                 showAlert('Course deleted!', 'success');
+                logActivity('Deleted Course');
                 loadCourses();
             } catch (error) {
                 showAlert('Failed to delete: ' + error.message, 'error');
@@ -648,7 +1069,7 @@
 
                 if (data.data.length === 0) {
                     list.innerHTML = '<p style="color: #999;">No reviews yet. Create one above!</p>';
-                    return;
+                    return data.data.length;
                 }
 
                 data.data.forEach(review => {
@@ -664,8 +1085,11 @@
                     `;
                     list.appendChild(card);
                 });
+
+                return data.data.length;
             } catch (error) {
                 showAlert('Failed to load reviews: ' + error.message, 'error');
+                return 0;
             }
         }
 
@@ -707,6 +1131,7 @@
                 });
 
                 showAlert('Review created!', 'success');
+                logActivity('Created Review', `${title} (Rating: ${rating}/10)`);
                 document.getElementById('review-title').value = '';
                 document.getElementById('review-text').value = '';
                 document.getElementById('review-rating').value = '';
@@ -722,6 +1147,7 @@
             try {
                 await fetchAPI(`${API_BASE}/reviews/${id}`, { method: 'DELETE' });
                 showAlert('Review deleted!', 'success');
+                logActivity('Deleted Review');
                 loadReviews();
             } catch (error) {
                 showAlert('Failed to delete: ' + error.message, 'error');

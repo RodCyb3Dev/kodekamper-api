@@ -2,6 +2,7 @@ const express = require('express');
 const {
   getSession,
   resetSession,
+  seedDemoData,
   getBootcamps,
   getBootcamp,
   createBootcamp,
@@ -26,6 +27,7 @@ const router = express.Router();
 // Session management
 router.route('/session').get(getSession).post(getSession);
 router.route('/reset').delete(resetSession);
+router.route('/seed').post(seedDemoData);
 
 // Bootcamps
 router.route('/bootcamps').get(getBootcamps).post(createBootcamp);
