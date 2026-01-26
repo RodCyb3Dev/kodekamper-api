@@ -1,0 +1,9 @@
+# Ignore deployment secrets/config
+.kamal/
+
+# Common
+node_modules/
+coverage/
+codeql-db/
+codeql-results.sarif
+public/uploads/

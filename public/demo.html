@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KodeKamper API - Interactive Demo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .session-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .session-info strong {
+            color: #667eea;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        button.danger {
+            background: #dc3545;
+        }
+        button.danger:hover {
+            background: #c82333;
+        }
+        button.success {
+            background: #28a745;
+        }
+        button.success:hover {
+            background: #218838;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .items-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .item-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .item-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .item-card p {
+            color: #666;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .item-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .item-actions button {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .alert {
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .hidden {
+            display: none;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+        .badge-primary {
+            background: #667eea;
+            color: white;
+        }
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+        .badge-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        .back-nav {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        .back-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+        .back-nav a:hover {
+            background: #f0f0f0;
+            color: #5568d3;
+            transform: translateX(-3px);
+        }
+        .back-nav .separator {
+            color: #ddd;
+            margin: 0 4px;
+        }
+        .back-nav .current-page {
+            color: #666;
+            font-size: 14px;
+        }
+        .stats-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .request-inspector {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .inspector-header {
+            background: #2d2d2d;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .inspector-header:hover {
+            background: #3d3d3d;
+        }
+        .inspector-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .inspector-toggle {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        .inspector-body {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .inspector-body.collapsed {
+            display: none;
+        }
+        .request-entry {
+            margin-bottom: 20px;
+            border-left: 3px solid #667eea;
+            padding-left: 12px;
+        }
+        .request-method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 11px;
+        }
+        .method-GET { background: #28a745; color: white; }
+        .method-POST { background: #007bff; color: white; }
+        .method-PUT { background: #ffc107; color: #333; }
+        .method-DELETE { background: #dc3545; color: white; }
+        .request-url {
+            color: #9cdcfe;
+            word-break: break-all;
+        }
+        .response-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin: 8px 0;
+            font-size: 11px;
+        }
+        .status-2xx { background: #28a745; color: white; }
+        .status-4xx { background: #ffc107; color: #333; }
+        .status-5xx { background: #dc3545; color: white; }
+        .json-preview {
+            background: #252525;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .activity-history {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .activity-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+        .activity-item {
+            padding: 10px;
+            background: white;
+            border-left: 3px solid #667eea;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .activity-time {
+            font-size: 11px;
+            color: #999;
+        }
+        .undo-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+        button.info {
+            background: #17a2b8;
+        }
+        button.info:hover {
+            background: #138496;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+            .back-nav {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-nav">
+            <a href="/index.html">← Back to Documentation</a>
+            <span class="separator">/</span>
+            <span class="current-page">Interactive Demo</span>
+        </div>
+        
+        <h1>🎓 KodeKamper API - Interactive Demo</h1>
+        <p class="subtitle">Test the full REST API with Bootcamps, Courses, and Reviews CRUD operations. All demo data is session-scoped and auto-deleted after 2 hours.</p>
+
+        <div id="alert-container"></div>
+
+        <!-- Statistics Dashboard -->
+        <div class="stats-dashboard">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-bootcamps">0</div>
+                <div class="stat-label">Bootcamps</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-courses">0</div>
+                <div class="stat-label">Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-reviews">0</div>
+                <div class="stat-label">Reviews</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-requests">0/30</div>
+                <div class="stat-label">API Requests</div>
+            </div>
+        </div>
+
+        <div class="session-info">
+            <strong>Session ID:</strong> <span id="session-id">Initializing...</span><br>
+            <strong>Expires:</strong> <span id="session-expires">--</span>
+        </div>
+
+        <div class="controls">
+            <button onclick="initSession()">🔄 Refresh Session</button>
+            <button onclick="seedSampleData()" class="info">🌱 Load Sample Data</button>
+            <button onclick="resetDemo()" class="danger">🗑️ Reset All Data</button>
+            <button onclick="loadAllData()" class="success">📥 Reload Data</button>
+            <button onclick="toggleInspector()" class="info">🔍 Toggle Inspector</button>
+        </div>
+
+        <!-- Activity History -->
+        <div class="activity-history">
+            <div class="activity-header">
+                <h3>📜 Recent Activity</h3>
+                <button onclick="clearHistory()" class="danger" style="padding: 4px 10px; font-size: 11px;">Clear</button>
+            </div>
+            <div id="activity-log">
+                <p style="color: #999; font-size: 13px; text-align: center;">No activity yet</p>
+            </div>
+        </div>
+
+        <!-- API Request Inspector -->
+        <div class="request-inspector">
+            <div class="inspector-header" onclick="toggleInspector()">
+                <div class="inspector-title">
+                    <span>🔍</span>
+                    <span>API Request Inspector</span>
+                </div>
+                <span class="inspector-toggle" id="inspector-toggle">Click to expand</span>
+            </div>
+            <div class="inspector-body collapsed" id="inspector-body">
+                <div id="requests-log">
+                    <p style="color: #999; text-align: center;">No requests yet. Start interacting with the API!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Examples Panel -->
+        <div class="section" id="code-examples-panel">
+            <h2 style="margin-bottom: 10px;">Code Examples</h2>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <button id="tab-curl" onclick="showCodeTab('curl')" class="info" style="padding: 6px 16px;">cURL</button>
+                <button id="tab-js" onclick="showCodeTab('js')" style="padding: 6px 16px;">JavaScript</button>
+                <button id="tab-python" onclick="showCodeTab('python')" style="padding: 6px 16px;">Python</button>
+            </div>
+            <div id="code-curl" class="code-example-block" style="display: block;">
+                <pre style="background: #23272e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto;"><code id="curl-code"># Perform an API request to see code example</code></pre>
+                <button onclick="copyCode('curl-code')" class="info" style="margin-top: 6px;">Copy</button>
+            </div>
+            <div id="code-js" class="code-example-block" style="display: none;">
+                <pre style="background: #23272e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto;"><code id="js-code">// Perform an API request to see code example</code></pre>
+                <button onclick="copyCode('js-code')" class="info" style="margin-top: 6px;">Copy</button>
+            </div>
+            <div id="code-python" class="code-example-block" style="display: none;">
+                <pre style="background: #23272e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto;"><code id="python-code"># Perform an API request to see code example</code></pre>
+                <button onclick="copyCode('python-code')" class="info" style="margin-top: 6px;">Copy</button>
+            </div>
+        </div>
+
+        <!-- Bootcamps Section -->
+        <div class="section">
+            <h2>Bootcamps</h2>
+            <div class="form-group">
+                <label>Bootcamp Name <span style="color: #dc3545;">*</span></label>
+                <input type="text" id="bootcamp-name" placeholder="e.g., DevMasters Bootcamp" required>
+            </div>
+            <div class="form-group">
+                <label>Description <span style="color: #dc3545;">*</span></label>
+                <textarea id="bootcamp-description" placeholder="Brief description of the bootcamp..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Email <span style="color: #dc3545;">*</span></label>
+                <input type="email" id="bootcamp-email" placeholder="info@bootcamp.com" required>
+            </div>
+            <div class="form-group">
+                <label>Website (optional)</label>
+                <input type="url" id="bootcamp-website" placeholder="https://example.com">
+            </div>
+            <button onclick="createBootcamp()" class="success">+ Add Bootcamp</button>
+            <div id="bootcamps-list" class="items-list"></div>
+        </div>
+
+        <!-- Courses Section -->
+        <div class="section">
+            <h2>Courses</h2>
+            <div class="form-group">
+                <label>Select Bootcamp <span style="color: #dc3545;">*</span></label>
+                <select id="course-bootcamp" required>
+                    <option value="">-- Select a bootcamp first --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Course Title <span style="color: #dc3545;">*</span></label>
+                <input type="text" id="course-title" placeholder="e.g., Full Stack Web Development" required>
+            </div>
+            <div class="form-group">
+                <label>Description <span style="color: #dc3545;">*</span></label>
+                <textarea id="course-description" placeholder="Course description..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Duration (weeks) <span style="color: #dc3545;">*</span></label>
+                <input type="number" id="course-weeks" placeholder="10" min="1" required>
+            </div>
+            <div class="form-group">
+                <label>Tuition ($) <span style="color: #dc3545;">*</span></label>
+                <input type="number" id="course-tuition" placeholder="12000" min="0" required>
+            </div>
+            <div class="form-group">
+                <label>Minimum Skill <span style="color: #dc3545;">*</span></label>
+                <select id="course-skill" required>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+            <button onclick="createCourse()" class="success">+ Add Course</button>
+            <div id="courses-list" class="items-list"></div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="section">
+            <h2>Reviews</h2>
+            <div class="form-group">
+                <label>Select Bootcamp to Review <span style="color: #dc3545;">*</span></label>
+                <select id="review-bootcamp" required>
+                    <option value="">-- Select a bootcamp first --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Review Title <span style="color: #dc3545;">*</span></label>
+                <input type="text" id="review-title" placeholder="e.g., Great experience!" required>
+            </div>
+            <div class="form-group">
+                <label>Review Text <span style="color: #dc3545;">*</span></label>
+                <textarea id="review-text" placeholder="Share your thoughts..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Rating (1-10) <span style="color: #dc3545;">*</span></label>
+                <input type="number" id="review-rating" placeholder="8" min="1" max="10" required>
+            </div>
+            <button onclick="createReview()" class="success">+ Add Review</button>
+            <div id="reviews-list" class="items-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api/v1/demo';
+        let csrfToken = '';
+        let sessionId = '';
+        let requestCount = 0;
+        let activityLog = [];
+
+        // Utility: Show alert
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        // Log activity
+        function logActivity(action, details = '') {
+            const timestamp = new Date().toLocaleTimeString();
+            activityLog.unshift({ action, details, timestamp, id: Date.now() });
+            
+            // Keep only last 20 items
+            if (activityLog.length > 20) activityLog.pop();
+            
+            updateActivityDisplay();
+        }
+
+        // Update activity display
+        function updateActivityDisplay() {
+            const logContainer = document.getElementById('activity-log');
+            
+            if (activityLog.length === 0) {
+                logContainer.innerHTML = '<p style="color: #999; font-size: 13px; text-align: center;">No activity yet</p>';
+                return;
+            }
+
+            logContainer.innerHTML = activityLog.map(item => `
+                <div class="activity-item">
+                    <div>
+                        <strong>${item.action}</strong>
+                        ${item.details ? `<br><span style="color: #666; font-size: 12px;">${item.details}</span>` : ''}
+                    </div>
+                    <div class="activity-time">${item.timestamp}</div>
+                </div>
+            `).join('');
+        }
+
+        // Clear activity history
+        function clearHistory() {
+            activityLog = [];
+            updateActivityDisplay();
+            showAlert('Activity history cleared', 'info');
+        }
+
+        // Toggle API inspector
+        function toggleInspector() {
+            const body = document.getElementById('inspector-body');
+            const toggle = document.getElementById('inspector-toggle');
+            
+            body.classList.toggle('collapsed');
+            toggle.textContent = body.classList.contains('collapsed') 
+                ? 'Click to expand' 
+                : 'Click to collapse';
+        }
+
+        // Log request to inspector and update code examples
+        function logRequest(method, url, status, responseData, requestBody = null, duration = 0) {
+            requestCount++;
+            document.getElementById('stat-requests').textContent = `${requestCount}/30`;
+            
+            const log = document.getElementById('requests-log');
+            
+            // Clear placeholder if first request
+            if (requestCount === 1) {
+                log.innerHTML = '';
+            }
+
+            const statusClass = status >= 200 && status < 300 ? '2xx' : 
+                              status >= 400 && status < 500 ? '4xx' : '5xx';
+
+            const entry = document.createElement('div');
+            entry.className = 'request-entry';
+            entry.innerHTML = `
+                <div>
+                    <span class="request-method method-${method}">${method}</span>
+                    <span class="request-url">${url.replace(window.location.origin, '')}</span>
+                    <span style="color: #999; font-size: 11px; margin-left: 10px;">${duration}ms</span>
+                </div>
+                <div>
+                    <span class="response-status status-${statusClass}">${status} ${status === 200 ? 'OK' : status === 201 ? 'Created' : status === 204 ? 'No Content' : 'Error'}</span>
+                </div>
+                ${requestBody ? `<div style="margin-top: 8px;"><strong style="color: #ce9178;">Request Body:</strong><div class="json-preview">${JSON.stringify(requestBody, null, 2)}</div></div>` : ''}
+                <div style="margin-top: 8px;">
+                    <strong style="color: #4ec9b0;">Response:</strong>
+                    <div class="json-preview">${JSON.stringify(responseData, null, 2)}</div>
+                </div>
+            `;
+
+            log.insertBefore(entry, log.firstChild);
+
+            // Keep only last 10 requests
+            while (log.children.length > 10) {
+                log.removeChild(log.lastChild);
+            }
+            // Update code examples panel
+            updateCodeExamples(method, url, requestBody, csrfToken);
+        }
+
+        // Code Examples Panel logic
+        function showCodeTab(tab) {
+            document.getElementById('tab-curl').classList.remove('info');
+            document.getElementById('tab-js').classList.remove('info');
+            document.getElementById('tab-python').classList.remove('info');
+            document.getElementById('code-curl').style.display = 'none';
+            document.getElementById('code-js').style.display = 'none';
+            document.getElementById('code-python').style.display = 'none';
+            if (tab === 'curl') {
+                document.getElementById('tab-curl').classList.add('info');
+                document.getElementById('code-curl').style.display = 'block';
+            } else if (tab === 'js') {
+                document.getElementById('tab-js').classList.add('info');
+                document.getElementById('code-js').style.display = 'block';
+            } else {
+                document.getElementById('tab-python').classList.add('info');
+                document.getElementById('code-python').style.display = 'block';
+            }
+        }
+
+        function copyCode(id) {
+            const code = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(code);
+            showAlert('Copied to clipboard!', 'success');
+        }
+
+        function updateCodeExamples(method, url, body, csrf) {
+            // Only show for API requests (not /csrf-token)
+            if (url.includes('/csrf-token')) return;
+            let curl = `curl -X ${method} '${url}' \\\n  -H 'Content-Type: application/json'`;
+            let js = `fetch('${url}', {\n  method: '${method}',\n  headers: {\n    'Content-Type': 'application/json',`;
+            let python = `import requests\n\nurl = '${url}'\nheaders = {\n    'Content-Type': 'application/json',`;
+            if (csrf && method !== 'GET') {
+                curl += ` \\\n  -H 'x-csrf-token: ${csrf}'`;
+                js += `\n    'x-csrf-token': '${csrf}',`;
+                python += `\n    'x-csrf-token': '${csrf}',`;
+            }
+            curl += ` \\\n  --cookie 'demo_sid=...'`;
+            js += `\n  },\n  credentials: 'include',`;
+            python += `\n}\n\ns = requests.Session()\ns.cookies.set('demo_sid', '...')`;
+            if (body) {
+                const pretty = JSON.stringify(body, null, 2);
+                curl += ` \\\n  -d '${pretty.replace(/'/g, "'\\''")}'`;
+                js += `\n  body: JSON.stringify(${pretty}),`;
+                python += `\n\ndata = ${pretty}\nresponse = s.request('${method}', url, headers=headers, json=data)`;
+            } else {
+                js += `\n}`;
+                python += `\nresponse = s.request('${method}', url, headers=headers)`;
+            }
+            js += `)\n  .then(res => res.json())\n  .then(data => console.log(data));`;
+            python += `\nprint(response.json())`;
+            document.getElementById('curl-code').innerText = curl;
+            document.getElementById('js-code').innerText = js;
+            document.getElementById('python-code').innerText = python;
+        }
+
+        // Update statistics
+        function updateStats(bootcamps, courses, reviews) {
+            document.getElementById('stat-bootcamps').textContent = bootcamps || 0;
+            document.getElementById('stat-courses').textContent = courses || 0;
+            document.getElementById('stat-reviews').textContent = reviews || 0;
+        }
+
+        // Utility: Fetch with CSRF and logging
+        async function fetchAPI(url, options = {}) {
+            const startTime = performance.now();
+            const headers = {
+                'Content-Type': 'application/json',
+                ...options.headers,
+            };
+
+            if (csrfToken && options.method && options.method !== 'GET') {
+                headers['x-csrf-token'] = csrfToken;
+            }
+
+            const method = options.method || 'GET';
+            const requestBody = options.body ? JSON.parse(options.body) : null;
+
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers,
+                    credentials: 'same-origin',
+                });
+
+                const data = await response.json();
+                const duration = Math.round(performance.now() - startTime);
+
+                // Log to inspector
+                logRequest(method, url, response.status, data, requestBody, duration);
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                return data;
+            } catch (error) {
+                const duration = Math.round(performance.now() - startTime);
+                logRequest(method, url, 0, { error: error.message }, requestBody, duration);
+                throw error;
+            }
+        }
+
+        // Seed sample data
+        async function seedSampleData() {
+            if (!confirm('This will add 3 sample bootcamps with courses and reviews. Continue?')) return;
+
+            try {
+                const data = await fetchAPI(`${API_BASE}/seed`, { method: 'POST' });
+                showAlert(`✅ Sample data created: ${data.data.counts.bootcamps} bootcamps, ${data.data.counts.courses} courses, ${data.data.counts.reviews} reviews`, 'success');
+                logActivity('Sample Data Loaded', `${data.data.counts.bootcamps} bootcamps, ${data.data.counts.courses} courses, ${data.data.counts.reviews} reviews`);
+                loadAllData();
+            } catch (error) {
+                showAlert('Failed to seed data: ' + error.message, 'error');
+            }
+        }
+
+        // Initialize session and CSRF token
+        async function initSession() {
+            try {
+                // Get CSRF token
+                const csrfData = await fetchAPI('/csrf-token');
+                csrfToken = csrfData.csrfToken;
+
+                // Get or create session
+                const sessionData = await fetchAPI(`${API_BASE}/session`);
+                sessionId = sessionData.data.sessionId;
+                
+                document.getElementById('session-id').textContent = sessionId.substring(0, 16) + '...';
+                document.getElementById('session-expires').textContent = new Date(sessionData.data.expiresAt).toLocaleString();
+                
+                showAlert('Session initialized successfully!', 'success');
+                loadAllData();
+            } catch (error) {
+                showAlert('Failed to initialize session: ' + error.message, 'error');
+            }
+        }
+
+        // Reset demo data
+        async function resetDemo() {
+            if (!confirm('This will delete all your demo data. Continue?')) return;
+
+            try {
+                await fetchAPI(`${API_BASE}/reset`, { method: 'DELETE' });
+                showAlert('Demo data reset successfully!', 'success');
+                logActivity('All Data Reset', 'All bootcamps, courses, and reviews deleted');
+                requestCount = 0;
+                document.getElementById('stat-requests').textContent = '0/30';
+                loadAllData();
+            } catch (error) {
+                showAlert('Failed to reset: ' + error.message, 'error');
+            }
+        }
+
+        // Load all data
+        async function loadAllData() {
+            const results = await Promise.all([
+                loadBootcamps(),
+                loadCourses(),
+                loadReviews()
+            ]);
+            
+            // Update stats with actual counts
+            updateStats(results[0], results[1], results[2]);
+        }
+
+        // Bootcamps
+        async function loadBootcamps() {
+            try {
+                const data = await fetchAPI(`${API_BASE}/bootcamps`);
+                const list = document.getElementById('bootcamps-list');
+                const bootcampSelects = [document.getElementById('course-bootcamp'), document.getElementById('review-bootcamp')];
+
+                list.innerHTML = '';
+                bootcampSelects.forEach(select => {
+                    select.innerHTML = '<option value="">-- Select a bootcamp --</option>';
+                });
+
+                if (data.data.length === 0) {
+                    list.innerHTML = '<p style="color: #999;">No bootcamps yet. Create one above!</p>';
+                    return data.data.length;
+                }
+
+                data.data.forEach(bootcamp => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <h3>${bootcamp.name}</h3>
+                        <p>${bootcamp.description || 'No description'}</p>
+                        ${bootcamp.website ? `<p>🌐 <a href="${bootcamp.website}" target="_blank">${bootcamp.website}</a></p>` : ''}
+                        ${bootcamp.email ? `<p>📧 ${bootcamp.email}</p>` : ''}
+                        <div class="item-actions">
+                            <button onclick="deleteBootcamp('${bootcamp._id}')" class="danger">Delete</button>
+                        </div>
+                    `;
+                    list.appendChild(card);
+
+                    bootcampSelects.forEach(select => {
+                        const option = document.createElement('option');
+                        option.value = bootcamp._id;
+                        option.textContent = bootcamp.name;
+                        select.appendChild(option);
+                    });
+                });
+
+                return data.data.length;
+            } catch (error) {
+                showAlert('Failed to load bootcamps: ' + error.message, 'error');
+                return 0;
+            }
+        }
+
+        async function createBootcamp() {
+            const name = document.getElementById('bootcamp-name').value.trim();
+            const description = document.getElementById('bootcamp-description').value.trim();
+            const website = document.getElementById('bootcamp-website').value.trim();
+            const email = document.getElementById('bootcamp-email').value.trim();
+
+            // Field-specific validation
+            if (!name) {
+                showAlert('Bootcamp name is required', 'error');
+                document.getElementById('bootcamp-name').focus();
+                return;
+            }
+
+            if (!description) {
+                showAlert('Description is required', 'error');
+                document.getElementById('bootcamp-description').focus();
+                return;
+            }
+
+            if (!email) {
+                showAlert('Email is required', 'error');
+                document.getElementById('bootcamp-email').focus();
+                return;
+            }
+
+            // Email format validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAlert('Please enter a valid email address', 'error');
+                document.getElementById('bootcamp-email').focus();
+                return;
+            }
+
+            // Website format validation (if provided)
+            if (website) {
+                try {
+                    new URL(website);
+                } catch (e) {
+                    showAlert('Please enter a valid website URL (e.g., https://example.com)', 'error');
+                    document.getElementById('bootcamp-website').focus();
+                    return;
+                }
+            }
+
+            try {
+                await fetchAPI(`${API_BASE}/bootcamps`, {
+                    method: 'POST',
+                    body: JSON.stringify({ name, description, website, email }),
+                });
+
+                showAlert('Bootcamp created!', 'success');
+                logActivity('Created Bootcamp', name);
+                document.getElementById('bootcamp-name').value = '';
+                document.getElementById('bootcamp-description').value = '';
+                document.getElementById('bootcamp-website').value = '';
+                document.getElementById('bootcamp-email').value = '';
+                loadBootcamps();
+            } catch (error) {
+                showAlert('Failed to create bootcamp: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteBootcamp(id) {
+            if (!confirm('Delete this bootcamp and all its courses/reviews?')) return;
+
+            try {
+                await fetchAPI(`${API_BASE}/bootcamps/${id}`, { method: 'DELETE' });
+                showAlert('Bootcamp deleted!', 'success');
+                logActivity('Deleted Bootcamp', 'Including all associated courses and reviews');
+                loadAllData();
+            } catch (error) {
+                showAlert('Failed to delete: ' + error.message, 'error');
+            }
+        }
+
+        // Courses
+        async function loadCourses() {
+            try {
+                const data = await fetchAPI(`${API_BASE}/courses`);
+                const list = document.getElementById('courses-list');
+
+                list.innerHTML = '';
+
+                if (data.data.length === 0) {
+                    list.innerHTML = '<p style="color: #999;">No courses yet. Create one above!</p>';
+                    return data.data.length;
+                }
+
+                data.data.forEach(course => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <h3>${course.title} <span class="badge badge-primary">${course.minimumSkill}</span></h3>
+                        <p>${course.description}</p>
+                        <p><strong>Bootcamp:</strong> ${course.bootcamp?.name || 'N/A'}</p>
+                        <p><strong>Duration:</strong> ${course.weeks} weeks | <strong>Tuition:</strong> $${course.tuition.toLocaleString()}</p>
+                        <div class="item-actions">
+                            <button onclick="deleteCourse('${course._id}')" class="danger">Delete</button>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+
+                return data.data.length;
+            } catch (error) {
+                showAlert('Failed to load courses: ' + error.message, 'error');
+                return 0;
+            }
+        }
+
+        async function createCourse() {
+            const bootcampId = document.getElementById('course-bootcamp').value;
+            const title = document.getElementById('course-title').value.trim();
+            const description = document.getElementById('course-description').value.trim();
+            const weeks = parseInt(document.getElementById('course-weeks').value);
+            const tuition = parseInt(document.getElementById('course-tuition').value);
+            const minimumSkill = document.getElementById('course-skill').value;
+
+            // Field-specific validation
+            if (!bootcampId) {
+                showAlert('Please select a bootcamp', 'error');
+                document.getElementById('course-bootcamp').focus();
+                return;
+            }
+
+            if (!title) {
+                showAlert('Course title is required', 'error');
+                document.getElementById('course-title').focus();
+                return;
+            }
+
+            if (!description) {
+                showAlert('Course description is required', 'error');
+                document.getElementById('course-description').focus();
+                return;
+            }
+
+            if (!weeks || weeks < 1) {
+                showAlert('Duration must be at least 1 week', 'error');
+                document.getElementById('course-weeks').focus();
+                return;
+            }
+
+            if (!tuition || tuition < 0) {
+                showAlert('Tuition amount is required and must be positive', 'error');
+                document.getElementById('course-tuition').focus();
+                return;
+            }
+
+            try {
+                await fetchAPI(`${API_BASE}/bootcamps/${bootcampId}/courses`, {
+                    method: 'POST',
+                    body: JSON.stringify({ title, description, weeks, tuition, minimumSkill }),
+                });
+
+                showAlert('Course created!', 'success');
+                logActivity('Created Course', title);
+                document.getElementById('course-title').value = '';
+                document.getElementById('course-description').value = '';
+                document.getElementById('course-weeks').value = '';
+                document.getElementById('course-tuition').value = '';
+                loadCourses();
+            } catch (error) {
+                showAlert('Failed to create course: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteCourse(id) {
+            if (!confirm('Delete this course?')) return;
+
+            try {
+                await fetchAPI(`${API_BASE}/courses/${id}`, { method: 'DELETE' });
+                showAlert('Course deleted!', 'success');
+                logActivity('Deleted Course');
+                loadCourses();
+            } catch (error) {
+                showAlert('Failed to delete: ' + error.message, 'error');
+            }
+        }
+
+        // Reviews
+        async function loadReviews() {
+            try {
+                const data = await fetchAPI(`${API_BASE}/reviews`);
+                const list = document.getElementById('reviews-list');
+
+                list.innerHTML = '';
+
+                if (data.data.length === 0) {
+                    list.innerHTML = '<p style="color: #999;">No reviews yet. Create one above!</p>';
+                    return data.data.length;
+                }
+
+                data.data.forEach(review => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <h3>${review.title} <span class="badge badge-success">⭐ ${review.rating}/10</span></h3>
+                        <p>${review.text}</p>
+                        <p><strong>Bootcamp:</strong> ${review.bootcamp?.name || 'N/A'}</p>
+                        <div class="item-actions">
+                            <button onclick="deleteReview('${review._id}')" class="danger">Delete</button>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+
+                return data.data.length;
+            } catch (error) {
+                showAlert('Failed to load reviews: ' + error.message, 'error');
+                return 0;
+            }
+        }
+
+        async function createReview() {
+            const bootcampId = document.getElementById('review-bootcamp').value;
+            const title = document.getElementById('review-title').value.trim();
+            const text = document.getElementById('review-text').value.trim();
+            const rating = parseInt(document.getElementById('review-rating').value);
+
+            // Field-specific validation
+            if (!bootcampId) {
+                showAlert('Please select a bootcamp to review', 'error');
+                document.getElementById('review-bootcamp').focus();
+                return;
+            }
+
+            if (!title) {
+                showAlert('Review title is required', 'error');
+                document.getElementById('review-title').focus();
+                return;
+            }
+
+            if (!text) {
+                showAlert('Review text is required', 'error');
+                document.getElementById('review-text').focus();
+                return;
+            }
+
+            if (!rating || rating < 1 || rating > 10) {
+                showAlert('Rating is required and must be between 1 and 10', 'error');
+                document.getElementById('review-rating').focus();
+                return;
+            }
+
+            try {
+                await fetchAPI(`${API_BASE}/bootcamps/${bootcampId}/reviews`, {
+                    method: 'POST',
+                    body: JSON.stringify({ title, text, rating }),
+                });
+
+                showAlert('Review created!', 'success');
+                logActivity('Created Review', `${title} (Rating: ${rating}/10)`);
+                document.getElementById('review-title').value = '';
+                document.getElementById('review-text').value = '';
+                document.getElementById('review-rating').value = '';
+                loadReviews();
+            } catch (error) {
+                showAlert('Failed to create review: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteReview(id) {
+            if (!confirm('Delete this review?')) return;
+
+            try {
+                await fetchAPI(`${API_BASE}/reviews/${id}`, { method: 'DELETE' });
+                showAlert('Review deleted!', 'success');
+                logActivity('Deleted Review');
+                loadReviews();
+            } catch (error) {
+                showAlert('Failed to delete: ' + error.message, 'error');
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', initSession);
+    </script>
+</body>
+</html>

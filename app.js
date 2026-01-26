@@ -7,7 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const { doubleCsrf } = require('csrf-csrf');
-const { globalLimiter } = require('./middleware/rateLimiters');
+const { globalLimiter, demoGlobalLimiter, demoWriteLimiter } = require('./middleware/rateLimiters');
 const botBlocker = require('./middleware/botBlocker');
 const hpp = require('hpp');
 const cors = require('cors');
@@ -21,6 +21,16 @@ const auth = require('./routes/auth');
 const users = require('./routes/users');
 const reviews = require('./routes/reviews');
 const health = require('./routes/health');
+const demo = require('./routes/demo');
+
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction && !process.env.CSRF_SECRET) {
+  throw new Error('CSRF_SECRET is required in production');
+}
+
+// Stable CSRF secret: from env in prod, fixed dev fallback
+const CSRF_SECRET = process.env.CSRF_SECRET || 'dev-csrf-secret-not-for-production';
 
 const app = express();
 
@@ -35,12 +45,12 @@ app.use(cookieParser());
 
 // CSRF protection
 const { doubleCsrfProtection, generateToken: generateCsrfToken } = doubleCsrf({
-  getSecret: () => process.env.CSRF_SECRET || 'default-csrf-secret-change-in-production',
-  cookieName: '__Host-psifi.x-csrf-token',
+  getSecret: () => CSRF_SECRET,
+  cookieName: isProduction ? '__Host-psifi.x-csrf-token' : 'psifi.x-csrf-token',
   cookieOptions: {
     sameSite: 'strict',
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction,
     httpOnly: true,
   },
   size: 64,
@@ -114,6 +124,9 @@ app.use('/api/v1/health', cacheResponse(10), health);
 
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Mount demo routes with strict rate limiting
+app.use('/api/v1/demo', demoGlobalLimiter, demoWriteLimiter, demo);
 
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);

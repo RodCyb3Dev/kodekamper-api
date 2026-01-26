@@ -9,7 +9,7 @@ builder:
 
 servers:
   web:
-    - <%= ENV.fetch('SERVER_IP', 'YOUR_SERVER_IP') %>
+    - <%= ENV.fetch('SERVER_IP') %>
 
 ssh:
   user: deploy
@@ -48,6 +48,7 @@ env:
     - JWT_SECRET
     - JWT_EXPIRE
     - JWT_COOKIE_EXPIRE
+    - CSRF_SECRET
     - SMTP_HOST
     - SMTP_PORT
     - SMTP_EMAIL
@@ -65,7 +66,7 @@ volumes:
 accessories:
   mongo:
     image: mongo:6
-    host: <%= ENV.fetch('SERVER_IP', 'YOUR_SERVER_IP') %>
+    host: <%= ENV.fetch('SERVER_IP') %>
     port: "27018:27017"
     env:
       secret:
@@ -76,7 +77,7 @@ accessories:
   
   redis:
     image: redis:7-alpine
-    host: <%= ENV.fetch('SERVER_IP', 'YOUR_SERVER_IP') %>
+    host: <%= ENV.fetch('SERVER_IP') %>
     port: 6380
     volumes:
       - /srv/www/staging/kodekamper/redis:/data

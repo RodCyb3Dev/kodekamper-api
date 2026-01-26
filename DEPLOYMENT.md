@@ -215,15 +215,17 @@ kamal deploy -d staging
 
 ### Manual Deployment
 
-```bash
-# Deploy production
-git checkout main
-kamal deploy
+You can also deploy directly from your local machine using the provided Kamal shell script:
 
-# Deploy staging
-git checkout staging
-kamal deploy -d staging
+```bash
+# Deploy to production
+./kamal.sh deploy
+
+# Deploy to staging
+./kamal.sh deploy -d staging
 ```
+
+This will use your local .kamal/secrets file for environment variables and secrets. Make sure all required secrets are set before running these commands.
 
 ## Useful Commands
 
