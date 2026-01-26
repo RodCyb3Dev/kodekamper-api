@@ -48,6 +48,7 @@ env:
     - JWT_SECRET
     - JWT_EXPIRE
     - JWT_COOKIE_EXPIRE
+    - CSRF_SECRET
     - SMTP_HOST
     - SMTP_PORT
     - SMTP_EMAIL
