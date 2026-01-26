@@ -83,7 +83,8 @@ exports.seedDemoData = asyncHandler(async (req, res, next) => {
     {
       sessionId,
       name: 'DevWorks Bootcamp',
-      description: 'Full stack web development bootcamp focused on modern JavaScript, React, Node.js, and MongoDB. Perfect for beginners looking to start a career in web development.',
+      description:
+        'Full stack web development bootcamp focused on modern JavaScript, React, Node.js, and MongoDB. Perfect for beginners looking to start a career in web development.',
       website: 'https://devworks.com',
       email: 'info@devworks.com',
       address: '233 Bay State Rd Boston MA 02215',
@@ -97,7 +98,8 @@ exports.seedDemoData = asyncHandler(async (req, res, next) => {
     {
       sessionId,
       name: 'ModernTech Bootcamp',
-      description: 'Intensive 12-week program covering front-end and back-end technologies. Industry-led curriculum with real-world projects and job placement support.',
+      description:
+        'Intensive 12-week program covering front-end and back-end technologies. Industry-led curriculum with real-world projects and job placement support.',
       website: 'https://moderntech.io',
       email: 'contact@moderntech.io',
       address: '220 Pawtucket St, Lowell, MA 01854',
@@ -111,7 +113,8 @@ exports.seedDemoData = asyncHandler(async (req, res, next) => {
     {
       sessionId,
       name: 'Codemasters Academy',
-      description: 'Learn to code from industry experts. Small class sizes, hands-on projects, and lifetime career support. Specializing in full-stack JavaScript and Python.',
+      description:
+        'Learn to code from industry experts. Small class sizes, hands-on projects, and lifetime career support. Specializing in full-stack JavaScript and Python.',
       website: 'https://codemasters.dev',
       email: 'hello@codemasters.dev',
       address: '85 South Prospect Street Burlington VT 05405',
@@ -134,7 +137,8 @@ exports.seedDemoData = asyncHandler(async (req, res, next) => {
       sessionId,
       bootcamp: bootcamps[0]._id,
       title: 'Front End Web Development',
-      description: 'Master HTML, CSS, JavaScript, and React to build modern, responsive web applications.',
+      description:
+        'Master HTML, CSS, JavaScript, and React to build modern, responsive web applications.',
       weeks: 8,
       tuition: 8000,
       minimumSkill: 'beginner',
@@ -145,7 +149,8 @@ exports.seedDemoData = asyncHandler(async (req, res, next) => {
       sessionId,
       bootcamp: bootcamps[0]._id,
       title: 'Full Stack Web Development',
-      description: 'Complete full-stack program covering MongoDB, Express, React, and Node.js (MERN stack).',
+      description:
+        'Complete full-stack program covering MongoDB, Express, React, and Node.js (MERN stack).',
       weeks: 12,
       tuition: 12000,
       minimumSkill: 'intermediate',
@@ -157,7 +162,8 @@ exports.seedDemoData = asyncHandler(async (req, res, next) => {
       sessionId,
       bootcamp: bootcamps[1]._id,
       title: 'Advanced JavaScript & TypeScript',
-      description: 'Deep dive into modern JavaScript ES6+, TypeScript, async programming, and design patterns.',
+      description:
+        'Deep dive into modern JavaScript ES6+, TypeScript, async programming, and design patterns.',
       weeks: 6,
       tuition: 9000,
       minimumSkill: 'intermediate',
@@ -168,7 +174,8 @@ exports.seedDemoData = asyncHandler(async (req, res, next) => {
       sessionId,
       bootcamp: bootcamps[1]._id,
       title: 'Mobile Development with React Native',
-      description: 'Build cross-platform mobile apps for iOS and Android using React Native and Expo.',
+      description:
+        'Build cross-platform mobile apps for iOS and Android using React Native and Expo.',
       weeks: 10,
       tuition: 11000,
       minimumSkill: 'intermediate',
@@ -180,7 +187,8 @@ exports.seedDemoData = asyncHandler(async (req, res, next) => {
       sessionId,
       bootcamp: bootcamps[2]._id,
       title: 'Python for Data Science',
-      description: 'Learn Python fundamentals, data analysis with Pandas, visualization, and machine learning basics.',
+      description:
+        'Learn Python fundamentals, data analysis with Pandas, visualization, and machine learning basics.',
       weeks: 10,
       tuition: 10000,
       minimumSkill: 'beginner',
@@ -421,10 +429,12 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Demo session required', 400));
   }
 
-  const courses = await DemoCourse.find({ sessionId }).populate({
-    path: 'bootcamp',
-    select: 'name description',
-  }).sort('-createdAt');
+  const courses = await DemoCourse.find({ sessionId })
+    .populate({
+      path: 'bootcamp',
+      select: 'name description',
+    })
+    .sort('-createdAt');
 
   res.status(200).json({
     success: true,
@@ -600,10 +610,12 @@ exports.getReviews = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Demo session required', 400));
   }
 
-  const reviews = await DemoReview.find({ sessionId }).populate({
-    path: 'bootcamp',
-    select: 'name description',
-  }).sort('-createdAt');
+  const reviews = await DemoReview.find({ sessionId })
+    .populate({
+      path: 'bootcamp',
+      select: 'name description',
+    })
+    .sort('-createdAt');
 
   res.status(200).json({
     success: true,

@@ -33,14 +33,7 @@ const DemoBootcampSchema = new mongoose.Schema(
     },
     careers: {
       type: [String],
-      enum: [
-        'Web Development',
-        'Mobile Development',
-        'UI/UX',
-        'Data Science',
-        'Business',
-        'Other',
-      ],
+      enum: ['Web Development', 'Mobile Development', 'UI/UX', 'Data Science', 'Business', 'Other'],
     },
     housing: {
       type: Boolean,
