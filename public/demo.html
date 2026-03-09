@@ -819,6 +819,7 @@
       async function fetchAPI(url, options = {}) {
         const startTime = performance.now();
         const headers = {
+          Accept: 'application/json',
           'Content-Type': 'application/json',
           ...options.headers,
         };
@@ -837,7 +838,22 @@
             credentials: 'same-origin',
           });
 
-          const data = await response.json();
+          const contentType = response.headers.get('content-type') || '';
+          const rawBody = await response.text();
+          let data;
+
+          if (contentType.includes('application/json')) {
+            data = rawBody ? JSON.parse(rawBody) : {};
+          } else {
+            // Handle non-JSON responses (proxy/app HTML errors) gracefully.
+            const normalizedBody = rawBody.replace(/\s+/g, ' ').trim();
+            data = {
+              success: false,
+              error: normalizedBody.startsWith('<!doctype') || normalizedBody.startsWith('<html')
+                ? `Received non-JSON response (status ${response.status}). Check server/proxy logs.`
+                : normalizedBody || `Unexpected response format (status ${response.status})`,
+            };
+          }
           const duration = Math.round(performance.now() - startTime);
 
           // Log to inspector

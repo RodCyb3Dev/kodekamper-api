@@ -69,6 +69,13 @@ app.use((req, res, next) => {
   if (process.env.NODE_ENV === 'test') {
     return next(); // Skip CSRF in tests
   }
+
+  // Auth API is token-based (Authorization header), not cookie-session based.
+  // Exempting it prevents CSRF failures for API clients like Postman.
+  if (req.path.startsWith('/api/v1/auth')) {
+    return next();
+  }
+
   doubleCsrfProtection(req, res, next); // Apply CSRF protection
 });
 
