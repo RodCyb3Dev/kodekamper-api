@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const {
   getSession,
   resetSession,
@@ -23,6 +24,18 @@ const {
 } = require('../controllers/demo');
 
 const router = express.Router();
+
+// Fail fast when DB is not connected so the UI gets a clear 503 instead of Mongoose buffering timeouts.
+router.use((req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      error: 'Database unavailable. Please retry in a moment.',
+    });
+  }
+
+  next();
+});
 
 // Session management
 router.route('/session').get(getSession).post(getSession);

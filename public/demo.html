@@ -431,8 +431,8 @@
           <div class="stat-label">Reviews</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" id="stat-requests">0/30</div>
-          <div class="stat-label">API Requests</div>
+           <div class="stat-value" id="stat-requests">0</div>
+           <div class="stat-label">API Requests (Total)</div>
         </div>
       </div>
 
@@ -712,7 +712,7 @@
       // Log request to inspector and update code examples
       function logRequest(method, url, status, responseData, requestBody = null, duration = 0) {
         requestCount++;
-        document.getElementById('stat-requests').textContent = `${requestCount}/30`;
+        document.getElementById('stat-requests').textContent = `${requestCount}`;
 
         const log = document.getElementById('requests-log');
 
@@ -924,7 +924,7 @@
           showAlert('Demo data reset successfully!', 'success');
           logActivity('All Data Reset', 'All bootcamps, courses, and reviews deleted');
           requestCount = 0;
-          document.getElementById('stat-requests').textContent = '0/30';
+          document.getElementById('stat-requests').textContent = '0';
           loadAllData();
         } catch (error) {
           showAlert('Failed to reset: ' + error.message, 'error');
