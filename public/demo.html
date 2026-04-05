@@ -808,6 +808,24 @@
         document.getElementById('python-code').innerText = python;
       }
 
+      async function refreshCsrfToken() {
+        const response = await fetch('/csrf-token', {
+          method: 'GET',
+          credentials: 'same-origin',
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.csrfToken) {
+          throw new Error(data.error || 'Failed to obtain CSRF token');
+        }
+
+        csrfToken = data.csrfToken;
+        return csrfToken;
+      }
+
       // Update statistics
       function updateStats(bootcamps, courses, reviews) {
         document.getElementById('stat-bootcamps').textContent = bootcamps || 0;
@@ -832,6 +850,10 @@
         const requestBody = options.body ? JSON.parse(options.body) : null;
 
         try {
+          if (method !== 'GET' && !csrfToken) {
+            await refreshCsrfToken();
+          }
+
           const response = await fetch(url, {
             ...options,
             headers,
@@ -854,6 +876,20 @@
                 : normalizedBody || `Unexpected response format (status ${response.status})`,
             };
           }
+          if (
+            !response.ok &&
+            data &&
+            typeof data.error === 'string' &&
+            data.error.toLowerCase().includes('invalid csrf token') &&
+            !options._retriedCsrf
+          ) {
+            await refreshCsrfToken();
+            return fetchAPI(url, {
+              ...options,
+              _retriedCsrf: true,
+            });
+          }
+
           const duration = Math.round(performance.now() - startTime);
 
           // Log to inspector
@@ -896,12 +932,14 @@
       async function initSession() {
         try {
           // Get CSRF token
-          const csrfData = await fetchAPI('/csrf-token');
-          csrfToken = csrfData.csrfToken;
+          await refreshCsrfToken();
 
           // Get or create session
           const sessionData = await fetchAPI(`${API_BASE}/session`);
           sessionId = sessionData.data.sessionId;
+
+          requestCount = 0;
+          document.getElementById('stat-requests').textContent = '0';
 
           document.getElementById('session-id').textContent = sessionId.substring(0, 16) + '...';
           document.getElementById('session-expires').textContent = new Date(

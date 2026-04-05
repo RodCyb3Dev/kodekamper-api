@@ -70,6 +70,14 @@ app.use((req, res, next) => {
     return next(); // Skip CSRF in tests
   }
 
+  const authHeader = req.headers.authorization || '';
+  const hasBearerToken = authHeader.startsWith('Bearer ');
+
+  // JWT Bearer API clients are not vulnerable to browser CSRF in this flow.
+  if (hasBearerToken) {
+    return next();
+  }
+
   // Auth API is token-based (Authorization header), not cookie-session based.
   // Exempting it prevents CSRF failures for API clients like Postman.
   if (req.path.startsWith('/api/v1/auth')) {
